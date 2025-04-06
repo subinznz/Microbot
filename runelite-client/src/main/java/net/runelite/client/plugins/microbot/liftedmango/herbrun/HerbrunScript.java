@@ -675,8 +675,7 @@ public class HerbrunScript extends Script {
                     handleClearAction(herbPatch);
                     break;
                 case "Inspect":
-                    System.out.println(Rs2GameObject.convertGameObjectToObjectComposition(herbPatch.getId()).getName());
-                    if (Rs2GameObject.convertGameObjectToObjectComposition(herbPatch.getId()).getName().equals("Herbs") || !Rs2GameObject.getObjectComposition(herbPatch.getId()).getName().toLowerCase().endsWith("allotment")   ) {
+                    if (Rs2GameObject.getObjectComposition(herbPatch.getId()).getName().toLowerCase().endsWith("herbs") || ( !Rs2GameObject.getObjectComposition(herbPatch.getId()).getName().toLowerCase().endsWith("allotment")  && !Rs2GameObject.getObjectComposition(herbPatch.getId()).getName().toLowerCase().endsWith("patch"))){
                         botStatus = nextState;
                     } else {
                         log.info("Patch is empty, planting seeds...");
