@@ -63,10 +63,58 @@ public interface HerbrunConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "allotment",
+            name = "Use Allotment?",
+            description = "Should we use allotment?",
+            position = 4,
+            section = settingsSection
+    )
+    default boolean ALLOTMENT() {
+        return false;
+    }
+
+
+    @ConfigItem(
+            keyName = "allotmentSeedTypes",
+            name = "Seeds to use",
+            description = "Which seeds to use for the herb run?",
+            position = 5,
+            section = settingsSection
+    )
+    default HerbrunInfo.allotmentSeedType ALLOTMENTSEED() {
+        return HerbrunInfo.allotmentSeedType.POTATO_SEED;
+    }
+
+    @ConfigItem(
+            keyName = "flower",
+            name = "Use Flower?",
+            description = "Should we use Flower?",
+            position = 6,
+            section = settingsSection
+    )
+    default boolean FLOWER() {
+        return false;
+    }
+
+
+    @ConfigItem(
+            keyName = "flowerSeedTypes",
+            name = "Seeds to use",
+            description = "Which seeds to use for the herb run?",
+            position = 7,
+            section = settingsSection
+    )
+    default HerbrunInfo.flowerSeedType FLOWERSEED() {
+        return HerbrunInfo.flowerSeedType.MARIGOLD_SEED;
+    }
+
+
+
+    @ConfigItem(
             keyName = "trollHeim teleport Type",
             name = "Trollheim teleport to use?",
             description = "Which trollheim teleport to use??",
-            position = 4,
+            position = 8,
             section = settingsSection
     )
     default HerbrunInfo.trollheimTeleport TROLLHEIMTELEPORT() {
@@ -77,7 +125,7 @@ public interface HerbrunConfig extends Config {
             keyName = "graceful",
             name = "Equip graceful?",
             description = "Should graceful be equipped from bank?",
-            position = 5,
+            position = 9,
             section = settingsSection
     )
     default boolean GRACEFUL() {
@@ -88,7 +136,7 @@ public interface HerbrunConfig extends Config {
             keyName = "farmersOutfit",
             name = "Equip Farmers outfit?",
             description = "Equip farmers outfit",
-            position = 6,
+            position = 10,
             section = settingsSection
     )
     default boolean FARMERS_OUTFIT() {
@@ -99,7 +147,7 @@ public interface HerbrunConfig extends Config {
             keyName = "fastHerb",
             name = "Fast Herb Picking?",
             description = "Enable quick herb picking",
-            position = 7,
+            position = 11,
             section = settingsSection
     )
     default boolean FAST_HERB() {
@@ -110,7 +158,7 @@ public interface HerbrunConfig extends Config {
             keyName = "ardougne_teleport",
             name = "Use Ardougne cloak?",
             description = "Does your ardougne cloak still have charges for today? If not the script will use Ardy tab",
-            position = 8,
+            position = 12,
             section = settingsSection
     )
     default boolean ARDOUGNE_TELEPORT_OPTION() {
@@ -121,7 +169,7 @@ public interface HerbrunConfig extends Config {
             keyName = "morytanita_teleport",
             name = "Use Ectophial?",
             description = "Do you have an ectophial? If not Fenkenstrain tab will be used.",
-            position = 9,
+            position = 13,
             section = settingsSection
     )
     default boolean USE_ECTOPHIAL() {
@@ -132,7 +180,7 @@ public interface HerbrunConfig extends Config {
             keyName = "falador_teleport",
             name = "Use Explorer's ring?",
             description = "Does your ring still have charges for today? If not the script will use falador tab",
-            position = 10,
+            position = 14,
             section = settingsSection
     )
     default boolean FALADOR_TELEPORT_OPTION() {
@@ -143,7 +191,7 @@ public interface HerbrunConfig extends Config {
             keyName = "farmingCape",
             name = "Use Farming cape?",
             description = "Use Farming cape instead of Skills necklace?",
-            position = 11,
+            position = 15,
             section = settingsSection
     )
     default boolean FARMING_CAPE() {
@@ -154,7 +202,7 @@ public interface HerbrunConfig extends Config {
             keyName = "varlamore_teleport",
             name = "Use Quetzal Whistle?",
             description = "Use Quetzal Whistle? If not Civitas tab will be used.",
-            position = 12,
+            position = 16,
             section = settingsSection
     )
     default boolean USE_QUETZAL_WHISTLE() {
@@ -165,7 +213,7 @@ public interface HerbrunConfig extends Config {
             keyName = "bottomless",
             name = "Use bottomless bucket?",
             description = "Should  bottomless bucket be withdrawn from the bank?",
-            position = 13,
+            position = 17,
             section = settingsSection
     )
     default boolean COMPOST() {
@@ -176,7 +224,7 @@ public interface HerbrunConfig extends Config {
             keyName = "enableGearing",
             name = "Enable Gearing",
             description = "Enable Gearing? Helps with debugging a specific location...",
-            position = 14,
+            position = 18,
             section = settingsSection
     )
     default boolean enableGearing() {

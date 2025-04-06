@@ -20,6 +20,9 @@ public class HerbrunInfo {
         CATHERBY_TELEPORT,
         CATHERBY_WALKING_TO_PATCH,
         CATHERBY_HANDLE_PATCH,
+        CATHERBY_HANDLE_ALLOTMENT_PATCH,
+        CATHERBY_HANDLE_ALLOTMENT_PATCH2,
+        CATHERBY_HANDLE_FLOWER_PATCH,
 
         // Morytania
         MORYTANIA_TELEPORT,
@@ -40,11 +43,17 @@ public class HerbrunInfo {
         ARDOUGNE_TELEPORT,
         ARDOUGNE_WALKING_TO_PATCH,
         ARDOUGNE_HANDLE_PATCH,
+        ARDOUGNE_HANDLE_ALLOTMENT_PATCH,
+        ARDOUGNE_HANDLE_ALLOTMENT_PATCH2,
+        ARDOUGNE_HANDLE_FLOWER_PATCH,
 
         // Falador
         FALADOR_TELEPORT,
         FALADOR_WALKING_TO_PATCH,
         FALADOR_HANDLE_PATCH,
+        FALADOR_HANDLE_ALLOTMENT_PATCH,
+        FALADOR_HANDLE_ALLOTMENT_PATCH2,
+        FALADOR_HANDLE_FLOWER_PATCH,
 
         // Weiss
         WEISS_TELEPORT,
@@ -91,6 +100,48 @@ public class HerbrunInfo {
         }
 
     }
+
+    @Getter
+    public enum allotmentSeedType {
+        POTATO_SEED(ItemID.POTATO_SEED, ItemID.POTATO),
+        ONION_SEED(ItemID.ONION_SEED, ItemID.ONION),
+        CABBAGE_SEED(ItemID.CABBAGE_SEED, ItemID.CABBAGE),
+        TOMATO_SEED(ItemID.TOMATO_SEED, ItemID.TOMATO),
+        SWEETCORN_SEED(ItemID.SWEETCORN_SEED, ItemID.SWEETCORN),
+        STRAWBERRY_SEED(ItemID.STRAWBERRY_SEED, ItemID.STRAWBERRY),
+        WATERMELON_SEED(ItemID.WATERMELON_SEED, ItemID.WATERMELON),
+        SNAPE_GRASS_SEED(ItemID.SNAPE_GRASS_SEED, ItemID.SNAPE_GRASS);
+
+        private final int itemId;
+        private final int allotmentId;
+
+        allotmentSeedType(final int _itemId, final int _allotmentId) {
+            itemId = _itemId;
+            allotmentId = _allotmentId;
+        }
+
+    }
+
+    @Getter
+    public enum flowerSeedType {
+        MARIGOLD_SEED(ItemID.MARIGOLD_SEED, ItemID.MARIGOLDS),
+        ROSEMARY_SEED(ItemID.ROSEMARY_SEED, ItemID.ROSEMARY),
+        NASTURTIUM_SEED(ItemID.NASTURTIUM_SEED, ItemID.NASTURTIUMS),
+        WOAD_SEED(ItemID.WOAD_SEED, ItemID.WOAD_LEAF),
+        LIMPWURT_SEED(ItemID.LIMPWURT_SEED, ItemID.LIMPWURT_ROOT),
+        WHITE_LILY_SEED(ItemID.WHITE_LILY_SEED, ItemID.WHITE_LILY);
+
+
+        private final int itemId;
+        private final int flowerId;
+
+        flowerSeedType(final int _itemId, final int _flowerId) {
+            itemId = _itemId;
+            flowerId = _flowerId;
+        }
+
+    }
+
 
     @Getter
     public enum bucketType {

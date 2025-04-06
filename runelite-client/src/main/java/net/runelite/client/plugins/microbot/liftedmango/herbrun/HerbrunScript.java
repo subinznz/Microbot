@@ -42,11 +42,18 @@ public class HerbrunScript extends Script {
     //herb patch Object ID
     private static final int trollheimHerbPatchID = 18816;
     private static final int catherbyHerbPatchID = 8151;
+    private static final int[] catherbyAllotmentPatchID ={8552,8553}; //50698?
+    private static final int catherbyFlowerPatchID =7848; //50698?
     private static final int morytaniaHerbPatchID = 8153;
     private static final int varlamoreHerbPatchID = 50697;
     private static final int hosidiusHerbPatchID = 27115;
     private static final int ardougneHerbPatchID = 8152; //leprechaun 0
+    private static final int[] ardougneAllotmentPatchID ={8554,8555}; //50698?
+    private static final int ardougneFlowerPatchID =7849; //50698?
     private static final int cabbageHerbPatchID = 8150; //50698?
+    private static final int[] cabbageAllotmentPatchID ={8550,8551}; //50698?
+    private static final int cabbageFlowerPatchID =7847; //50698?
+
     private static final int farmingGuildHerbPatchID = 33979;
     private static final int weissHerbPatchID = 33176;
     private static final int harmonyHerbPatchID = 9372;
@@ -66,6 +73,8 @@ public class HerbrunScript extends Script {
     public boolean run(HerbrunConfig config) {
 
         int seedToPlant = config.SEED().getItemId();
+        int allotmentSeedToPlant = config.ALLOTMENTSEED().getItemId();
+        int flowerSeedToPlant = config.FLOWERSEED().getItemId();
 
         Microbot.enableAutoRunOn = false;
         botStatus = states.GEARING;
@@ -75,7 +84,7 @@ public class HerbrunScript extends Script {
                 if (!Microbot.isLoggedIn()) return;
                 if (!super.run()) return;
 
-
+                System.out.println("Main loop");
                 switch (botStatus) {
                     case GEARING:
                         if (!config.enableGearing()) {
@@ -148,9 +157,33 @@ public class HerbrunScript extends Script {
                         if (Rs2Player.distanceTo(catherbyHerb) < 15) {
                             log.info("State: CATHERBY_HANDLE_PATCH - Handling Catherby patch");
                             printHerbPatchActions(catherbyHerbPatchID);
-                            handleHerbPatch(catherbyHerbPatchID, seedToPlant, config, states.MORYTANIA_TELEPORT);
+                            handleHerbPatch(catherbyHerbPatchID, seedToPlant, config, config.ALLOTMENT() ? states.CATHERBY_HANDLE_ALLOTMENT_PATCH : states.MORYTANIA_TELEPORT);
+                        }
+
+                    case CATHERBY_HANDLE_ALLOTMENT_PATCH:
+                        log.info("State: CATHERBY_HANDLE_ALLOTMENT_PATCH - Handling CATHERBY patch");
+                        if (Rs2Player.distanceTo(catherbyHerb) < 15) {
+                            printHerbPatchActions(catherbyAllotmentPatchID[0]);
+                            handleHerbPatch(catherbyAllotmentPatchID[0], allotmentSeedToPlant, config, states.CATHERBY_HANDLE_ALLOTMENT_PATCH2);
                         }
                         break;
+
+                    case CATHERBY_HANDLE_ALLOTMENT_PATCH2:
+                        log.info("State: CATHERBY_HANDLE_ALLOTMENT_PATCH2 - Handling CATHERBY patch");
+                        if (Rs2Player.distanceTo(catherbyHerb) < 15) {
+                            printHerbPatchActions(catherbyAllotmentPatchID[1]);
+                            handleHerbPatch(catherbyAllotmentPatchID[1], allotmentSeedToPlant, config, config.FLOWER() ? states.CATHERBY_HANDLE_FLOWER_PATCH : states.MORYTANIA_TELEPORT);
+                        }
+                        break;
+
+                    case CATHERBY_HANDLE_FLOWER_PATCH:
+                        log.info("State: CATHERBY_HANDLE_FLOWER_PATCH - Handling CATHERBY patch");
+                        if (Rs2Player.distanceTo(catherbyHerb) < 15) {
+                            printHerbPatchActions(catherbyFlowerPatchID);
+                            handleHerbPatch(catherbyFlowerPatchID, flowerSeedToPlant, config, states.MORYTANIA_TELEPORT);
+                        }
+                        break;
+
 
                     case MORYTANIA_TELEPORT:
                         log.info("State: MORYTANIA_TELEPORT - Teleporting to Morytania");
@@ -245,9 +278,33 @@ public class HerbrunScript extends Script {
                         log.info("State: ARDOUGNE_HANDLE_PATCH - Handling Ardougne patch");
                         if (Rs2Player.distanceTo(ardougneHerb) < 15) {
                             printHerbPatchActions(ardougneHerbPatchID);
-                            handleHerbPatch(ardougneHerbPatchID, seedToPlant, config, states.FALADOR_TELEPORT);
+                            handleHerbPatch(ardougneHerbPatchID, seedToPlant, config, config.ALLOTMENT() ? states.ARDOUGNE_HANDLE_ALLOTMENT_PATCH : states.FALADOR_TELEPORT);
                         }
 
+                        break;
+
+                    case ARDOUGNE_HANDLE_ALLOTMENT_PATCH:
+                        log.info("State: ARDOUGNE_HANDLE_ALLOTMENT_PATCH - Handling ARDOUGNE patch");
+                        if (Rs2Player.distanceTo(ardougneHerb) < 15) {
+                            printHerbPatchActions(ardougneAllotmentPatchID[0]);
+                            handleHerbPatch(ardougneAllotmentPatchID[0], allotmentSeedToPlant, config, states.ARDOUGNE_HANDLE_ALLOTMENT_PATCH2);
+                        }
+                        break;
+
+                    case ARDOUGNE_HANDLE_ALLOTMENT_PATCH2:
+                        log.info("State: ARDOUGNE_HANDLE_ALLOTMENT_PATCH2 - Handling ARDOUGNE patch");
+                        if (Rs2Player.distanceTo(ardougneHerb) < 15) {
+                            printHerbPatchActions(ardougneAllotmentPatchID[1]);
+                            handleHerbPatch(ardougneAllotmentPatchID[1], allotmentSeedToPlant, config, config.FLOWER() ? states.ARDOUGNE_HANDLE_FLOWER_PATCH : states.FALADOR_TELEPORT);
+                        }
+                        break;
+
+                    case ARDOUGNE_HANDLE_FLOWER_PATCH:
+                        log.info("State: ARDOUGNE_HANDLE_FLOWER_PATCH - Handling ARDOUGNE patch");
+                        if (Rs2Player.distanceTo(ardougneHerb) < 15) {
+                            printHerbPatchActions(ardougneFlowerPatchID);
+                            handleHerbPatch(ardougneFlowerPatchID, flowerSeedToPlant, config, states.FALADOR_TELEPORT);
+                        }
                         break;
 
                     case FALADOR_TELEPORT:
@@ -270,7 +327,31 @@ public class HerbrunScript extends Script {
                         log.info("State: FALADOR_HANDLE_PATCH - Handling Falador patch");
                         if (Rs2Player.distanceTo(cabbageHerb) < 15) {
                             printHerbPatchActions(cabbageHerbPatchID);
-                            handleHerbPatch(cabbageHerbPatchID, seedToPlant, config, states.WEISS_TELEPORT);
+                            handleHerbPatch(cabbageHerbPatchID, seedToPlant, config, config.ALLOTMENT() ? states.FALADOR_HANDLE_ALLOTMENT_PATCH : states.WEISS_TELEPORT);
+                        }
+                        break;
+
+                    case FALADOR_HANDLE_ALLOTMENT_PATCH:
+                        log.info("State: FALADOR_HANDLE_ALLOTMENT_PATCH - Handling Falador patch");
+                        if (Rs2Player.distanceTo(cabbageHerb) < 15) {
+                            printHerbPatchActions(cabbageAllotmentPatchID[0]);
+                            handleHerbPatch(cabbageAllotmentPatchID[0], allotmentSeedToPlant, config, states.FALADOR_HANDLE_ALLOTMENT_PATCH2);
+                        }
+                        break;
+
+                    case FALADOR_HANDLE_ALLOTMENT_PATCH2:
+                        log.info("State: FALADOR_HANDLE_ALLOTMENT_PATCH2 - Handling Falador patch");
+                        if (Rs2Player.distanceTo(cabbageHerb) < 15) {
+                            printHerbPatchActions(cabbageAllotmentPatchID[1]);
+                            handleHerbPatch(cabbageAllotmentPatchID[1], allotmentSeedToPlant, config, config.FLOWER() ? states.FALADOR_HANDLE_FLOWER_PATCH : states.WEISS_TELEPORT);
+                        }
+                        break;
+
+                    case FALADOR_HANDLE_FLOWER_PATCH:
+                        log.info("State: FALADOR_HANDLE_FLOWER_PATCH - Handling Falador patch");
+                        if (Rs2Player.distanceTo(cabbageHerb) < 15) {
+                            printHerbPatchActions(cabbageFlowerPatchID);
+                            handleHerbPatch(cabbageFlowerPatchID, flowerSeedToPlant, config, states.WEISS_TELEPORT);
                         }
                         break;
 
@@ -394,6 +475,8 @@ public class HerbrunScript extends Script {
 
     private void withdrawHerbSetup(HerbrunConfig config) {
         Rs2Bank.withdrawX(config.SEED().getItemId(), 10);
+        if (config.ALLOTMENT()) Rs2Bank.withdrawX(config.ALLOTMENTSEED().getItemId(), 10);
+        if (config.FLOWER()) Rs2Bank.withdrawX(config.FLOWERSEED().getItemId(), 10);
         if (config.COMPOST()) {
             Rs2Bank.withdrawOne(ItemID.BOTTOMLESS_COMPOST_BUCKET_22997);
         } else {
@@ -559,7 +642,7 @@ public class HerbrunScript extends Script {
         if (!Rs2Player.isMoving() &&
                 !Rs2Player.isAnimating() &&
                 !Rs2Player.isInteracting()) {
-            String[] possibleActions = {"Pick", "Rake", "Clear", "Inspect"};
+            String[] possibleActions = {"Harvest","Pick", "Rake", "Clear", "Inspect"};
 
             GameObject herbPatch = null;
             String foundAction = null;
@@ -575,12 +658,13 @@ public class HerbrunScript extends Script {
 
             // If no herb patch is, print an error and return
             if (herbPatch == null) {
-                System.out.println("Herb patch not found with any of the possible actions!");
+                System.out.println("Herb/Allotment patch not found with any of the possible actions!");
                 return;
             }
 
             // Handle the patch based on the action found
             switch (foundAction) {
+                case "Harvest":
                 case "Pick":
                     handlePickAction(herbPatch, patchId, config);
                     break;
@@ -591,7 +675,8 @@ public class HerbrunScript extends Script {
                     handleClearAction(herbPatch);
                     break;
                 case "Inspect":
-                    if (Rs2GameObject.convertGameObjectToObjectComposition(herbPatch.getId()).getName().equals("Herbs")) {
+                    System.out.println(Rs2GameObject.convertGameObjectToObjectComposition(herbPatch.getId()).getName());
+                    if (Rs2GameObject.convertGameObjectToObjectComposition(herbPatch.getId()).getName().equals("Herbs") || !Rs2GameObject.getObjectComposition(herbPatch.getId()).getName().toLowerCase().endsWith("allotment")   ) {
                         botStatus = nextState;
                     } else {
                         log.info("Patch is empty, planting seeds...");
@@ -610,6 +695,7 @@ public class HerbrunScript extends Script {
 
     private void handlePickAction(GameObject herbPatch, int patchId, HerbrunConfig config) {
         System.out.println("Picking herbs...");
+        if(config.ALLOTMENT()) System.out.println("Harvesting Allotment...");
         Rs2NpcModel leprechaun = Rs2Npc.getNpc("Tool leprechaun");
 
         // If inventory is full, note herbs first
@@ -644,14 +730,23 @@ public class HerbrunScript extends Script {
         System.out.println("Noting herbs with tool leprechaun...");
         Rs2Inventory.useItemOnNpc(config.SEED().getHerbId(), leprechaun);
         Rs2Inventory.waitForInventoryChanges(7000);
+        if (config.ALLOTMENT()) {
+            Rs2Inventory.useItemOnNpc(config.ALLOTMENTSEED().getAllotmentId(), leprechaun);
+            Rs2Inventory.waitForInventoryChanges(7000);
+        }
+        if (config.FLOWER()){
+            Rs2Inventory.useItemOnNpc(config.FLOWERSEED().getFlowerId(), leprechaun);
+            Rs2Inventory.waitForInventoryChanges(7000);
+        }
+
     }
 
     private void pickHerbs(GameObject herbPatch, HerbrunConfig config, int loopCount) {
-        Rs2GameObject.interact(herbPatch, "pick");
+        Rs2GameObject.interact(herbPatch, (config.ALLOTMENT() || config.FLOWER()) ? "harvest" : "pick");
         if (config.FAST_HERB()) {
             Rs2Player.waitForXpDrop(Skill.FARMING);
             for (int i = 0; i < loopCount; i++) {
-                Rs2GameObject.interact(herbPatch, "pick");
+                Rs2GameObject.interact(herbPatch, (config.ALLOTMENT() || config.FLOWER()) ? "harvest" : "pick");
                 sleep(25, 100);
             }
         }
