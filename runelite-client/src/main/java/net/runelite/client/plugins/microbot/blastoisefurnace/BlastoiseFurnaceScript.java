@@ -108,11 +108,9 @@ public class BlastoiseFurnaceScript extends Script {
                             }
 
                             Rs2Bank.depositEquipment();
-                            Rs2Bank.depositAllExcept(coalBag, ItemID.GOLDSMITH_GAUNTLETS, ItemID.ICE_GLOVES, ItemID.SMITHS_GLOVES_I);
 
                             var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                             if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
-                                Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                                 if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                     plugin.reportFinished("Failed to load inventory setup",false);
                                     return;
