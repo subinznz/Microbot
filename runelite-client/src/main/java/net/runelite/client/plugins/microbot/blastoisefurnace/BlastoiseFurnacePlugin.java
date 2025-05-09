@@ -58,8 +58,6 @@ public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin 
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-
-
             Microbot.stopPlugin(this);
         }
     }

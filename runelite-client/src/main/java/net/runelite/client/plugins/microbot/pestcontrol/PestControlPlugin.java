@@ -11,6 +11,10 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.pestcontrol.Portal;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -29,13 +33,37 @@ import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript
         enabledByDefault = false
 )
 @Slf4j
-public class PestControlPlugin extends Plugin {
+public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Inject
     private PestControlConfig config;
 
     @Provides
     PestControlConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(PestControlConfig.class);
+    }
+
+    private LogicalCondition stopCondition = new AndCondition();
+
+    @Override
+    public LogicalCondition getStartCondition() {
+        // Create conditions that determine when your plugin can start
+        // Return null if the plugin can start anytime
+        return null;
+    }
+
+    @Override
+    public LogicalCondition getStopCondition() {
+        // Create a new stop condition
+
+        return this.stopCondition;
+    }
+
+    @Subscribe
+    public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
+        if (event.getPlugin() == this) {
+
+            Microbot.stopPlugin(this);
+        }
     }
 
     @Inject
