@@ -6,7 +6,10 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 
 import net.runelite.api.widgets.ComponentID;
+import net.runelite.client.plugins.microbot.herbrun.HerbrunConfig;
+import net.runelite.client.plugins.microbot.herbrun.HerbrunPlugin;
 import net.runelite.client.plugins.microbot.shortestpath.ShortestPathPlugin;
+import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
 import net.runelite.client.plugins.microbot.util.antiban.Rs2Antiban;
 import net.runelite.client.plugins.microbot.util.antiban.Rs2AntibanSettings;
 
@@ -31,6 +34,8 @@ import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.microbot.util.widget.Rs2Widget;
 
+import javax.inject.Inject;
+
 import static net.runelite.api.ItemID.COAL;
 import static net.runelite.api.ItemID.GOLD_ORE;
 
@@ -44,6 +49,13 @@ public class BlastoiseFurnaceScript extends Script {
     static boolean coalBagEmpty;
     static boolean primaryOreEmpty;
     static boolean secondaryOreEmpty;
+    private final BlastoiseFurnacePlugin plugin;
+
+    @Inject
+    public BlastoiseFurnaceScript(BlastoiseFurnacePlugin plugin, BlastoiseFurnacePlugin config) {
+        this.plugin = plugin;
+        //this.config = config;
+    }
 
     static {
         state = State.INITIALISE;
@@ -88,10 +100,31 @@ public class BlastoiseFurnaceScript extends Script {
                             Microbot.hopToWorld(config.world());
                             sleepUntil(() -> Rs2Player.getWorld() == config.world(), 10000);
                         }
-                        if (Rs2Walker.distanceToRegion(1948, 4957) > 5) {
+                        if (Rs2Player.getWorldLocation().getRegionID() == 7757) {
+                            if (!Rs2Bank.isOpen()) {
+                                Microbot.log("Opening bank");
+                                Rs2Bank.openBank();
+                                sleepUntil(Rs2Bank::isOpen, 20000);
+                            }
+
+                            Rs2Bank.depositEquipment();
+                            Rs2Bank.depositAllExcept(coalBag, ItemID.GOLDSMITH_GAUNTLETS, ItemID.ICE_GLOVES, ItemID.SMITHS_GLOVES_I);
+
+                            var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
+                            if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                                Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                                if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                    plugin.reportFinished("Failed to load inventory setup",false);
+                                    return;
+                                }
+                            }
+
+
+                            state = State.BANKING;
+                        } else {
                             Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));
                         }
-                        state = State.BANKING;
+                        break;
                     case BANKING:
                         Microbot.status = "Banking";
                         if (!Rs2Bank.isOpen()) {
