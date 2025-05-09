@@ -108,6 +108,7 @@ public class BlastoiseFurnaceScript extends Script {
                             }
 
                             Rs2Bank.depositEquipment();
+                            sleep(500, 1200);
 
                             var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                             if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
@@ -518,15 +519,15 @@ public class BlastoiseFurnaceScript extends Script {
 
         boolean usedPotion = false;
 
-        // Step 1: Keep using Energy potions until energy is above 71%
-        while (Microbot.getClient().getEnergy() < 6900) {
+        // Step 1: Keep using Energy potions until energy is above 69%
+        while (Microbot.getClient().getEnergy() < 4900) {
             usedPotion = usePotionIfNeeded("Energy potion", 6900);
             if (!usedPotion) {
                 break; // Exit if no Energy potion is available
             }
         }
 
-        // Step 2: If energy is above 71% but below 81%, use Stamina potion if no stamina buff is active
+        // Step 2: If energy is above 69% but below 81%, use Stamina potion if no stamina buff is active
         if (Microbot.getClient().getEnergy() < 8100 && !Rs2Player.hasStaminaBuffActive()) {
             usedPotion = usePotionIfNeeded("Stamina potion", 8100);
         }
