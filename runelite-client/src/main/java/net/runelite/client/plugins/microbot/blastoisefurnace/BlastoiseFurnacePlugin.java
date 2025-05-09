@@ -11,7 +11,12 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
+import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.blastoisefurnace.enums.State;
+import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
@@ -26,12 +31,37 @@ import java.awt.*;
         enabledByDefault = false
 )
 @Slf4j
-public class BlastoiseFurnacePlugin extends Plugin {
+public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin {
     @Inject
     private BlastoiseFurnaceConfig config;
     @Provides
     BlastoiseFurnaceConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(BlastoiseFurnaceConfig.class);
+    }
+
+    private LogicalCondition stopCondition = new AndCondition();
+
+    @Override
+    public LogicalCondition getStartCondition() {
+        // Create conditions that determine when your plugin can start
+        // Return null if the plugin can start anytime
+        return null;
+    }
+
+    @Override
+    public LogicalCondition getStopCondition() {
+        // Create a new stop condition
+
+        return this.stopCondition;
+    }
+
+    @Subscribe
+    public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
+        if (event.getPlugin() == this) {
+
+
+            Microbot.stopPlugin(this);
+        }
     }
 
     @Inject

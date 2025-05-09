@@ -45,7 +45,7 @@ public class BlastoiseFurnaceScript extends Script {
     static boolean secondaryOreEmpty;
 
     static {
-        state = State.BANKING;
+        state = State.INITIALISE;
     }
 
     private BlastoiseFurnaceConfig config;
@@ -81,6 +81,10 @@ public class BlastoiseFurnaceScript extends Script {
 
                 boolean hasGauntlets;
                 switch (state) {
+                    case INITIALISE:
+                        Microbot.status = "Initialising";
+                        Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));                            Rs2Player.logout();
+
                     case BANKING:
                         Microbot.status = "Banking";
                         if (!Rs2Bank.isOpen()) {
@@ -109,6 +113,21 @@ public class BlastoiseFurnaceScript extends Script {
                                 }
 
                                 Rs2Bank.withdrawItem(ItemID.GOLDSMITH_GAUNTLETS);
+                            }
+                        } else {
+                            hasGauntlets = Rs2Inventory.contains(ItemID.ICE_GLOVES) || Rs2Equipment.isWearing(ItemID.ICE_GLOVES);
+                            if (!hasGauntlets) {
+                                if (!Rs2Bank.hasItem(ItemID.ICE_GLOVES)) {
+                                    Microbot.showMessage("No ICE GLOVES found.");
+                                    this.shutdown();
+                                    return;
+                                }
+
+                                Rs2Bank.withdrawItem(ItemID.ICE_GLOVES);
+                                sleep(900);
+                                Rs2Inventory.interact(ItemID.ICE_GLOVES, "Wear");
+                                sleep(900);
+
                             }
                         }
 
@@ -264,6 +283,9 @@ public class BlastoiseFurnaceScript extends Script {
     private void retrieveDoubleCoal() {
         if (!Rs2Inventory.hasItem(COAL)) {
             Rs2Bank.withdrawAll(COAL);
+            sleep(500, 1200);
+            Rs2Bank.closeBank();
+            sleep(500, 1200);
             return;
         }
         boolean fullCoalBag = Rs2Inventory.interact(coalBag, "Fill");
