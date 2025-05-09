@@ -34,6 +34,20 @@ public interface BlastoiseFurnaceConfig extends Config {
     default Bars getBars() {
         return Bars.STEEL_BAR;
     }
+
+    @ConfigItem(
+            keyName = "World",
+            name = "World",
+            description = "Blast Furnace world",
+            position = 2,
+            section = "bFSettings"
+    )
+
+    default int world() {
+        return 358;
+    }
+
+
     @ConfigSection(
             name = "Credits",
             description = "Credits",

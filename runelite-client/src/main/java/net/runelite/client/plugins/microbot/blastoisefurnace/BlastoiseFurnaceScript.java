@@ -24,6 +24,7 @@ import net.runelite.client.plugins.microbot.util.equipment.Rs2Equipment;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
 import net.runelite.client.plugins.microbot.util.keyboard.Rs2Keyboard;
+import net.runelite.client.plugins.microbot.util.math.Rs2Random;
 import net.runelite.client.plugins.microbot.util.npc.Rs2Npc;
 import net.runelite.client.plugins.microbot.util.npc.Rs2NpcModel;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
@@ -62,7 +63,7 @@ public class BlastoiseFurnaceScript extends Script {
         staminaTimer = 0;
         this.config = config;
         Microbot.enableAutoRunOn = false;
-        state = State.BANKING;
+        state = State.INITIALISE;
         primaryOreEmpty = !Rs2Inventory.hasItem(config.getBars().getPrimaryOre());
         secondaryOreEmpty = !Rs2Inventory.hasItem(config.getBars().getSecondaryOre());
         Rs2Antiban.resetAntibanSettings();
@@ -83,8 +84,14 @@ public class BlastoiseFurnaceScript extends Script {
                 switch (state) {
                     case INITIALISE:
                         Microbot.status = "Initialising";
-                        Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));                            Rs2Player.logout();
-
+                        if ( Rs2Player.getWorld() != config.world()) {
+                            Microbot.hopToWorld(config.world());
+                            sleepUntil(() -> Rs2Player.getWorld() == config.world(), 10000);
+                        }
+                        if (Rs2Walker.distanceToRegion(1948, 4957) > 5) {
+                            Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));
+                        }
+                        state = State.BANKING;
                     case BANKING:
                         Microbot.status = "Banking";
                         if (!Rs2Bank.isOpen()) {
@@ -188,8 +195,12 @@ public class BlastoiseFurnaceScript extends Script {
         sleep(500, 1200);
         Rs2Bank.withdrawX(ItemID.COINS_995,2500);
         sleep(500, 1200);
-        Rs2Bank.closeBank();
-        sleep(500, 1200);
+        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+        if (randomThreshold > 1) {
+            Rs2Bank.closeBank();
+            sleep(500, 1200);
+        }
+
         Rs2NpcModel blastie = Rs2Npc.getNpc("Blast Furnace Foreman");
         Rs2Npc.interact(blastie, "Pay");
         sleepUntil(Rs2Dialogue::isInDialogue,10000);
@@ -257,8 +268,11 @@ public class BlastoiseFurnaceScript extends Script {
         if (!fullCoalBag)
             return;
         sleep(500, 1200);
-        Rs2Bank.closeBank();
-        sleep(500, 1200);
+        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+        if (randomThreshold > 1) {
+            Rs2Bank.closeBank();
+            sleep(500, 1200);
+        }
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
@@ -284,8 +298,11 @@ public class BlastoiseFurnaceScript extends Script {
         if (!Rs2Inventory.hasItem(COAL)) {
             Rs2Bank.withdrawAll(COAL);
             sleep(500, 1200);
-            Rs2Bank.closeBank();
-            sleep(500, 1200);
+            int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+            if (randomThreshold > 3) {
+                Rs2Bank.closeBank();
+                sleep(500, 1200);
+            }
             return;
         }
         boolean fullCoalBag = Rs2Inventory.interact(coalBag, "Fill");
