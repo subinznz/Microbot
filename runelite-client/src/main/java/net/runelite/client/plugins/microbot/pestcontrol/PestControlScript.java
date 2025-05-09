@@ -11,6 +11,9 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.Script;
+import net.runelite.client.plugins.microbot.blastoisefurnace.BlastoiseFurnacePlugin;
+import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
+import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.combat.Rs2Combat;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
 import net.runelite.client.plugins.microbot.util.magic.Rs2Magic;
@@ -23,6 +26,7 @@ import net.runelite.client.plugins.microbot.util.widget.Rs2Widget;
 import net.runelite.client.plugins.pestcontrol.Portal;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -33,8 +37,18 @@ import static net.runelite.client.plugins.pestcontrol.Portal.*;
 public class PestControlScript extends Script {
     public static double version = 2.2;
 
+    boolean initialise = true;
+
     boolean walkToCenter = false;
     PestControlConfig config;
+    private final PestControlPlugin plugin;
+
+    @Inject
+    public PestControlScript(PestControlPlugin plugin, PestControlPlugin config) {
+        this.plugin = plugin;
+        //this.config = config;
+    }
+
 
     private static final Set<Integer> SPINNER_IDS = ImmutableSet.of(
             NpcID.SPINNER,
@@ -72,6 +86,29 @@ public class PestControlScript extends Script {
 
                 final boolean isInPestControl = Microbot.getClient().getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD) != null;
                 final boolean isInBoat = Microbot.getClient().getWidget(WidgetInfo.PEST_CONTROL_BOAT_INFO) != null;
+
+                if (initialise && !isInPestControl && !isInBoat) {
+                    Microbot.log("Initialising");
+                    if (Rs2Player.getWorldLocation().getRegionID() == 10537) {
+                        if (!Rs2Bank.isOpen()) {
+                            Microbot.log("Opening bank");
+                            Rs2Bank.openBank();
+                            sleepUntil(Rs2Bank::isOpen, 20000);
+                        }
+                    var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
+                    if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                            plugin.reportFinished("Failed to load inventory setup",false);
+                            return;
+                        }
+                        initialise = false;
+
+                    }
+                }else {
+                        Microbot.log("Traveling to Pest Island");
+                        Rs2Walker.walkTo(new WorldPoint(2667, 2653, 0));
+                    }
+                }
                 if (isInPestControl) {
                     if (!isQuickPrayerEnabled() && Microbot.getClient().getBoostedSkillLevel(Skill.PRAYER) != 0 && config.quickPrayer()) {
                         final Widget prayerOrb = Rs2Widget.getWidget(ComponentID.MINIMAP_QUICK_PRAYER_ORB);
@@ -138,7 +175,7 @@ public class PestControlScript extends Script {
                         }
                     }
 
-                } else {
+                } else if (!initialise){
                     Rs2Walker.setTarget(null);
                     resetPortals();
                     walkToCenter = false;
@@ -168,6 +205,10 @@ public class PestControlScript extends Script {
 
     public void shutDown() {
         super.shutdown();
+    }
+
+    public boolean isOutside() {
+        return Microbot.getClient().getLocalPlayer().getWorldLocation().distanceTo(new WorldPoint(2653, 2646, 0)) < 20;
     }
 
     private boolean handleAttack(PestControlNpc npcType, int priority) {

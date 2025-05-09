@@ -11,10 +11,13 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.nmz.NmzScript;
 import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
+import net.runelite.client.plugins.microbot.util.Global;
+import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.pestcontrol.Portal;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -26,6 +29,8 @@ import java.util.regex.Pattern;
 
 import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript.portals;
 
+
+
 @PluginDescriptor(
         name = PluginDescriptor.Mocrosoft + "Pest Control",
         description = "Microbot Pest Control plugin, this only supports the combat 100+ boat. Start at the front of the boat",
@@ -34,6 +39,10 @@ import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript
 )
 @Slf4j
 public class PestControlPlugin extends Plugin implements SchedulablePlugin {
+
+    @Inject
+    PestControlScript pestcontolScript;
+
     @Inject
     private PestControlConfig config;
 
@@ -61,8 +70,14 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-
-            Microbot.stopPlugin(this);
+            pestcontolScript.shutdown();
+            Microbot.getClientThread().runOnSeperateThread(() -> {
+                if(!pestcontolScript.isOutside()) {
+                    Global.sleepUntil(pestcontolScript::isOutside, 10000);
+                }
+                Microbot.stopPlugin(this);
+                return true;
+            });
         }
     }
 
