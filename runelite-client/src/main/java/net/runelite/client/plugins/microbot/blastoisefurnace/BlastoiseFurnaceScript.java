@@ -176,7 +176,9 @@ public class BlastoiseFurnaceScript extends Script {
 
                         if (!this.hasRequiredOresForSmithing()) {
                             Microbot.log("Out of ores. Walking you out for coffer safety");
-                            Rs2Walker.walkTo(new WorldPoint(2930, 10196, 0));                            Rs2Player.logout();
+                            Rs2Walker.walkTo(new WorldPoint(2930, 10196, 0));
+                            Rs2Player.logout();
+                            plugin.reportFinished("Out of ores.",false);
                             this.shutdown();
 
                         }
