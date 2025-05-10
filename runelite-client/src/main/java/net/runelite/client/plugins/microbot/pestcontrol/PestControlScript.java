@@ -93,7 +93,9 @@ public class PestControlScript extends Script {
                     Microbot.log("Initialising");
                     if (Rs2Player.getWorld() != config.world()) {
                         Microbot.hopToWorld(config.world());
-                        sleep(5000, 7000);
+                        sleep(1000, 3000);
+                        Microbot.hopToWorld(config.world());
+                        sleepUntil(() -> Rs2Player.getWorld() == config.world(), 7000);
                     }
                     if (Rs2Player.getWorldLocation().getRegionID() == 10537 && Rs2Player.getWorld() == config.world()) {
                         if (!Rs2Bank.isOpen()) {
@@ -199,7 +201,7 @@ public class PestControlScript extends Script {
                     resetPortals();
                     walkToCenter = false;
                     sleep(Rs2Random.between(1600, 1800));
-                    if (!isInBoat) {
+                    if (!isInBoat && !initialise) {
                         if (Microbot.getClient().getLocalPlayer().getCombatLevel() >= 100) {
                             Rs2GameObject.interact(ObjectID.GANGPLANK_25632);
                         } else if (Microbot.getClient().getLocalPlayer().getCombatLevel() >= 70) {

@@ -16,6 +16,7 @@ import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugi
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LockCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.OrCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.plugins.microbot.util.Global;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
@@ -67,7 +68,9 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Override
     public LogicalCondition getStopCondition() {
         // Create a new stop condition
+        OrCondition orCondition = new OrCondition();
         AndCondition andCondition = new AndCondition();
+        andCondition.addCondition(orCondition);   // Other stop conditions
         andCondition.addCondition(lockCondition); // Add the lock condition
         return andCondition;
     }
