@@ -353,7 +353,7 @@ public class FarmTreeRunScript extends Script {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE4, 1));
                 } else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE5)) {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE5, 1));
-                } else if else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE6)) {
+                } else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE6)) {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE6, 1));
                 } else {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE1, 2));
