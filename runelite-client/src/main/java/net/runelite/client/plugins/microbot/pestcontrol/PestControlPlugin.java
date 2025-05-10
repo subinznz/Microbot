@@ -14,6 +14,7 @@ import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.nmz.NmzScript;
 import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LockCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.plugins.microbot.util.Global;
@@ -51,7 +52,7 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
         return configManager.getConfig(PestControlConfig.class);
     }
 
-    private LogicalCondition stopCondition = new AndCondition();
+
 
     @Override
     public LogicalCondition getStartCondition() {
@@ -60,21 +61,21 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
         return null;
     }
 
+    public LockCondition lockCondition = new LockCondition("Void insists you finish this round");
+
+
     @Override
     public LogicalCondition getStopCondition() {
         // Create a new stop condition
-
-        return this.stopCondition;
+        AndCondition andCondition = new AndCondition();
+        andCondition.addCondition(lockCondition); // Add the lock condition
+        return andCondition;
     }
 
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
             Microbot.log("Scheduler about to turn off Pest Control");
-            if(pestControlScript.isInPestControl()) {
-                Microbot.log("Waiting to finish current game");
-                Global.sleepUntil(pestControlScript::isOutside, 1200000);
-            }
             if(pestControlScript.isInBoat()) {
                 Microbot.log("Getting off boat");
                 pestControlScript.exitBoat();
