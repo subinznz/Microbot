@@ -94,5 +94,14 @@ public interface PestControlConfig extends Config {
     default InventorySetup inventorySetup() {
         return null;
     }
+    @ConfigItem(
+            keyName = "World",
+            name = "World",
+            description = "Pest Control world",
+            position = 10
+    )
 
+    default int world() {
+        return 344;
+    }
 }

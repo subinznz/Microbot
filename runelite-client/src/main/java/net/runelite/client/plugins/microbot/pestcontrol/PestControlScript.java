@@ -11,7 +11,6 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.Script;
-import net.runelite.client.plugins.microbot.blastoisefurnace.BlastoiseFurnacePlugin;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
 import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.combat.Rs2Combat;
@@ -89,21 +88,36 @@ public class PestControlScript extends Script {
 
                 if (initialise && !isInPestControl && !isInBoat) {
                     Microbot.log("Initialising");
+                    if ( Rs2Player.getWorld() != config.world()) {
+                        Microbot.hopToWorld(config.world());
+                        sleepUntil(() -> Rs2Player.getWorld() == config.world(), 10000);
+                    }
                     if (Rs2Player.getWorldLocation().getRegionID() == 10537) {
                         if (!Rs2Bank.isOpen()) {
                             Microbot.log("Opening bank");
                             Rs2Bank.openBank();
-                            sleepUntil(Rs2Bank::isOpen, 20000);
+                            sleepUntil(Rs2Bank::isOpen, 3000);
                         }
-                    var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
-                    if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
-                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                            plugin.reportFinished("Failed to load inventory setup",false);
-                            return;
-                        }
-                        initialise = false;
+                        var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
+                        Microbot.log("Starting Inv Setup");
+                        try {
+                            if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                                if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                    plugin.reportFinished("Failed to load inventory setup",false);
+                                    return;
+                                }
+                            } else {
+                                Microbot.log("Inv Setup Finished");
+                                Rs2Bank.closeBank();
+                                sleepUntil(() -> !Rs2Bank.isOpen(), 2000);
+                                initialise = false;
+                            }
 
-                    }
+                        } catch (NullPointerException e) {
+                            throw new RuntimeException("Void thinks you should relect the Inventory setup again");
+                        }
+
+
                 }else {
                         Microbot.log("Traveling to Pest Island");
                         Rs2Walker.walkTo(new WorldPoint(2667, 2653, 0));

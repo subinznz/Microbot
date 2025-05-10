@@ -106,15 +106,6 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     }
 
     @Subscribe
-    public void onGameTick(GameTick event)
-    {
-        boolean isInPestControl = Microbot.getClient().getWidget(ComponentID.PEST_CONTROL_BLUE_SHIELD) != null;
-        if (!isInPestControl) {
-            Rs2Walker.setTarget(null);
-        }
-    }
-
-    @Subscribe
     public void onChatMessage(ChatMessage chatMessage) {
         if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
             Matcher matcher = SHIELD_DROP.matcher(chatMessage.getMessage());
