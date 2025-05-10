@@ -41,7 +41,7 @@ import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript
 public class PestControlPlugin extends Plugin implements SchedulablePlugin {
 
     @Inject
-    PestControlScript pestcontolScript;
+    PestControlScript pestControlScript;
 
     @Inject
     private PestControlConfig config;
@@ -70,14 +70,19 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            pestcontolScript.shutdown();
-            Microbot.getClientThread().runOnSeperateThread(() -> {
-                if(!pestcontolScript.isOutside()) {
-                    Global.sleepUntil(pestcontolScript::isOutside, 10000);
-                }
-                Microbot.stopPlugin(this);
-                return true;
-            });
+            Microbot.log("Scheduler about to turn off Pest Control");
+            if(pestControlScript.isInPestControl()) {
+                Microbot.log("Waiting to finish current game");
+                Global.sleepUntil(pestControlScript::isOutside, 1200000);
+            }
+            if(pestControlScript.isInBoat()) {
+                Microbot.log("Getting off boat");
+                pestControlScript.exitBoat();
+                Global.sleepUntil(pestControlScript::isOutside, 5000);
+            }
+            Microbot.log("Reached outside");
+            pestControlScript.shutdown();
+            Microbot.stopPlugin(this);
         }
     }
 
@@ -85,9 +90,6 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     private OverlayManager overlayManager;
     @Inject
     private PestControlOverlay pestControlOverlay;
-
-    @Inject
-    PestControlScript pestControlScript;
 
     private final Pattern SHIELD_DROP = Pattern.compile("The ([a-z]+), [^ ]+ portal shield has dropped!", Pattern.CASE_INSENSITIVE);
 
@@ -97,6 +99,7 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
         if (overlayManager != null) {
             overlayManager.add(pestControlOverlay);
         }
+        pestControlScript.initialise = true;
         pestControlScript.run(config);
     }
 
