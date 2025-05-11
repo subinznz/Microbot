@@ -56,6 +56,7 @@ public class FornBirdhouseRunsPlugin extends Plugin implements SchedulablePlugin
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         try{
             if (event.getPlugin() == this) {
+                this.shutDown();
                 Microbot.stopPlugin(this);
             }
         } catch (Exception e) {

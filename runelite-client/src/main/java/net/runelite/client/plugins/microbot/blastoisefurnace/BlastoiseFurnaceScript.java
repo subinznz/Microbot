@@ -46,6 +46,7 @@ public class BlastoiseFurnaceScript extends Script {
     public static double version = 1.0;
     public static State state;
     static int staminaTimer;
+    static int invSetupRetries;
     static boolean coalBagEmpty;
     static boolean primaryOreEmpty;
     static boolean secondaryOreEmpty;
@@ -81,6 +82,7 @@ public class BlastoiseFurnaceScript extends Script {
         Rs2Antiban.resetAntibanSettings();
         applyAntiBanSettings();
 
+
         this.mainScheduledFuture = this.scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
                 if (!Microbot.isLoggedIn()) {
@@ -114,10 +116,14 @@ public class BlastoiseFurnaceScript extends Script {
                                     if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                                         Rs2Bank.depositEquipment();
                                         sleep(500, 1200);
+//                                        Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                                         if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                            plugin.reportFinished("Failed to load inventory setup", false);
-                                            return;
+                                            if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                                plugin.reportFinished("Failed to load inventory setup", false);
+                                                return;
+                                            }
                                         }
+                                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                                     } else {
                                         Microbot.log("Inv Setup Finished");
                                         sleepUntil(() -> !Rs2Bank.isOpen(), 2000);
@@ -339,7 +345,7 @@ public class BlastoiseFurnaceScript extends Script {
         if (!Rs2Inventory.hasItem(COAL)) {
             Rs2Bank.withdrawAll(COAL);
             sleep(500, 1200);
-            int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+            int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 2.5); // Adjust mean and deviation as needed
             if (randomThreshold > 3) {
                 Rs2Bank.closeBank();
                 sleep(500, 1200);
@@ -650,23 +656,13 @@ public class BlastoiseFurnaceScript extends Script {
         Rs2AntibanSettings.devDebug = true;
     }
 
-
+    @Override
     public void shutdown() {
-
-        if (mainScheduledFuture != null && !mainScheduledFuture.isDone()) {
-            mainScheduledFuture.cancel(true);
-            ShortestPathPlugin.exit();
-            if (Microbot.getClientThread().scheduledFuture != null)
-                Microbot.getClientThread().scheduledFuture.cancel(true);
-            initialPlayerLocation = null;
-            Microbot.pauseAllScripts = false;
-            Microbot.getSpecialAttackConfigs().reset();
-        }
-
-
-        state = State.BANKING;
+        Microbot.log("Blast Furance about to shutdown");
         primaryOreEmpty = false;
         secondaryOreEmpty = false;
         super.shutdown();
+        state = State.INITIALISE;
+
     }
 }
