@@ -98,31 +98,35 @@ public class BlastoiseFurnaceScript extends Script {
                         Microbot.status = "Initialising";
                         if ( Rs2Player.getWorld() != config.world()) {
                             Microbot.hopToWorld(config.world());
-                            sleep(3000,5000);
+                            sleep(1000,3000);
                             Microbot.hopToWorld(config.world());
-                            sleepUntil(() -> Rs2Player.getWorld() == config.world(), 10000);
+                            sleepUntil(() -> Rs2Player.getWorld() == config.world(), 7000);
                         }
-                        if (Rs2Player.getWorldLocation().getRegionID() == 7757) {
+                        if (Rs2Player.getWorldLocation().getRegionID() == 7757 && Rs2Player.getWorld() == config.world()) {
                             if (!Rs2Bank.isOpen()) {
                                 Microbot.log("Opening bank");
                                 Rs2Bank.openBank();
-
-                                sleepUntil(Rs2Bank::isOpen, 20000);
-                            }
-
-                            Rs2Bank.depositEquipment();
-                            sleep(500, 1200);
-
-                            var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
-                            if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
-                                if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                    plugin.reportFinished("Failed to load inventory setup",false);
-                                    return;
+                                sleepUntil(Rs2Bank::isOpen, 7000);
+                            } else {
+                                var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
+                                Microbot.log("Starting Inv Setup");
+                                try {
+                                    if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                                        Rs2Bank.depositEquipment();
+                                        sleep(500, 1200);
+                                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                            plugin.reportFinished("Failed to load inventory setup", false);
+                                            return;
+                                        }
+                                    } else {
+                                        Microbot.log("Inv Setup Finished");
+                                        sleepUntil(() -> !Rs2Bank.isOpen(), 2000);
+                                        state = State.BANKING;
+                                    }
+                                } catch (NullPointerException e) {
+                                    throw new RuntimeException("Foreman thinks should reselect the Inventory setup again");
                                 }
                             }
-
-
-                            state = State.BANKING;
                         } else {
                             Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));
                         }
