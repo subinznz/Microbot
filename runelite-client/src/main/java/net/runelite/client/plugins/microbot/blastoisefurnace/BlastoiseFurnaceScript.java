@@ -98,12 +98,15 @@ public class BlastoiseFurnaceScript extends Script {
                         Microbot.status = "Initialising";
                         if ( Rs2Player.getWorld() != config.world()) {
                             Microbot.hopToWorld(config.world());
+                            sleep(3000,5000);
+                            Microbot.hopToWorld(config.world());
                             sleepUntil(() -> Rs2Player.getWorld() == config.world(), 10000);
                         }
                         if (Rs2Player.getWorldLocation().getRegionID() == 7757) {
                             if (!Rs2Bank.isOpen()) {
                                 Microbot.log("Opening bank");
                                 Rs2Bank.openBank();
+
                                 sleepUntil(Rs2Bank::isOpen, 20000);
                             }
 
