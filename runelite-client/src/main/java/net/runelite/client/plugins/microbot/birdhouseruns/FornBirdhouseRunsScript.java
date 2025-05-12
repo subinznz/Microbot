@@ -61,7 +61,6 @@ public class FornBirdhouseRunsScript extends Script {
                                 this.shutdown();
                                 return;
                             }
-
                         }
                         if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                     }

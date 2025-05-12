@@ -5,6 +5,7 @@ package net.runelite.client.plugins.microbot.blastoisefurnace;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 
+import net.runelite.api.GameState;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.plugins.microbot.herbrun.HerbrunConfig;
 import net.runelite.client.plugins.microbot.herbrun.HerbrunPlugin;
@@ -51,22 +52,22 @@ public class BlastoiseFurnaceScript extends Script {
     static boolean primaryOreEmpty;
     static boolean secondaryOreEmpty;
     private final BlastoiseFurnacePlugin plugin;
+    private final BlastoiseFurnaceConfig config;
+
 
     @Inject
-    public BlastoiseFurnaceScript(BlastoiseFurnacePlugin plugin, BlastoiseFurnacePlugin config) {
+    public BlastoiseFurnaceScript(BlastoiseFurnacePlugin plugin, BlastoiseFurnaceConfig config) {
         this.plugin = plugin;
-        //this.config = config;
+        this.config = config;
     }
 
     static {
         state = State.INITIALISE;
     }
 
-    private BlastoiseFurnaceConfig config;
-
     private boolean hasRequiredOresForSmithing() {
-        int primaryOre = this.config.getBars().getPrimaryOre();
-        int secondaryOre = this.config.getBars().getSecondaryOre() == null ? -1 : this.config.getBars().getSecondaryOre();
+        int primaryOre = config.getBars().getPrimaryOre();
+        int secondaryOre = config.getBars().getSecondaryOre() == null ? -1 : config.getBars().getSecondaryOre();
         boolean hasPrimaryOre = Rs2Bank.hasItem(primaryOre);
         boolean hasSecondaryOre = secondaryOre != -1 && Rs2Bank.hasItem(secondaryOre);
         return hasPrimaryOre && hasSecondaryOre;
@@ -74,7 +75,6 @@ public class BlastoiseFurnaceScript extends Script {
 
     public boolean run(BlastoiseFurnaceConfig config) {
         staminaTimer = 0;
-        this.config = config;
         Microbot.enableAutoRunOn = false;
         state = State.INITIALISE;
         primaryOreEmpty = !Rs2Inventory.hasItem(config.getBars().getPrimaryOre());
@@ -98,42 +98,35 @@ public class BlastoiseFurnaceScript extends Script {
                 switch (state) {
                     case INITIALISE:
                         Microbot.status = "Initialising";
-                        if ( Rs2Player.getWorld() != config.world()) {
-                            Microbot.hopToWorld(config.world());
-                            sleep(1000,3000);
-                            Microbot.hopToWorld(config.world());
-                            sleepUntil(() -> Rs2Player.getWorld() == config.world(), 7000);
-                        }
-                        if (Rs2Player.getWorldLocation().getRegionID() == 7757 && Rs2Player.getWorld() == config.world()) {
-                            if (!Rs2Bank.isOpen()) {
-                                Microbot.log("Opening bank");
-                                Rs2Bank.openBank();
-                                sleepUntil(Rs2Bank::isOpen, 7000);
-                            } else {
-                                var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
-                                Microbot.log("Starting Inv Setup");
+                        if (Rs2Player.getWorldLocation().getRegionID() == 7757) {
+                            var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
+                            Microbot.log("Starting Inv Setup");
                                 try {
                                     if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
-                                        Rs2Bank.depositEquipment();
                                         sleep(500, 1200);
-//                                        Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                                        Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                                         if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                            if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                                plugin.reportFinished("Failed to load inventory setup", false);
-                                                return;
-                                            }
+                                            plugin.reportFinished("Failed to load inventory setup", false);
+                                            return;
                                         }
-                                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
-                                    } else {
-                                        Microbot.log("Inv Setup Finished");
-                                        sleepUntil(() -> !Rs2Bank.isOpen(), 2000);
-                                        state = State.BANKING;
                                     }
+                                    Microbot.log("Inv Setup Finished");
+                                    if (Microbot.getClient().getWorld() != config.world()) {
+                                        Microbot.log("Hopping world to: "+config.world());
+                                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+                                        boolean isHopped = Microbot.hopToWorld(config.world());
+                                        if (!isHopped) return;
+                                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
+                                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
+                                    }
+                                    state = State.BANKING;
+
                                 } catch (NullPointerException e) {
                                     throw new RuntimeException("Foreman thinks should reselect the Inventory setup again");
                                 }
-                            }
+
                         } else {
+                            Microbot.log("Walking to BlastFurnace");
                             Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));
                         }
                         break;
@@ -142,16 +135,13 @@ public class BlastoiseFurnaceScript extends Script {
                         if (!Rs2Bank.isOpen()) {
                             Microbot.log("Opening bank");
                             Rs2Bank.openBank();
-                            sleepUntil(Rs2Bank::isOpen, 20000);
                         }
-
                         if (config.getBars().isRequiresCoalBag() && !Rs2Inventory.contains(coalBag)) {
                             if (!Rs2Bank.hasItem(coalBag)) {
                                 Microbot.showMessage("No coal bag found in inventory and bank.");
                                 this.shutdown();
                                 return;
                             }
-
                             Rs2Bank.withdrawItem(coalBag);
                         }
 
@@ -242,8 +232,9 @@ public class BlastoiseFurnaceScript extends Script {
         sleep(500, 1200);
         Rs2Bank.withdrawX(ItemID.COINS_995,2500);
         sleep(500, 1200);
-        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 2.5); // Adjust mean and deviation as needed
         if (randomThreshold > 1) {
+            Microbot.log("Random closeBank");
             Rs2Bank.closeBank();
             sleep(500, 1200);
         }
@@ -303,11 +294,10 @@ public class BlastoiseFurnaceScript extends Script {
     }
 
     private void retrieveCoalAndPrimary() {
-        int primaryOre = this.config.getBars().getPrimaryOre();
+        int primaryOre = config.getBars().getPrimaryOre();
         if (!Rs2Inventory.hasItem(primaryOre)) {
             Rs2Bank.withdrawAll(primaryOre);
             sleep(500, 1200);
-
             return;
         }
 
@@ -315,9 +305,12 @@ public class BlastoiseFurnaceScript extends Script {
         if (!fullCoalBag)
             return;
         sleep(500, 1200);
-        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 1.5); // Adjust mean and deviation as needed
+        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 2.5); // Adjust mean and deviation as needed
+        Microbot.log("Random coalAndPrimary Threshold: " + randomThreshold);
+
         if (randomThreshold > 1) {
             Rs2Bank.closeBank();
+            Microbot.log("Random closeBank");
             sleep(500, 1200);
         }
         depositOre();
@@ -337,7 +330,7 @@ public class BlastoiseFurnaceScript extends Script {
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(this.config.getBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(config.getBars()) > 0, 10000);
         sleep(400, 700);
     }
 
@@ -345,16 +338,19 @@ public class BlastoiseFurnaceScript extends Script {
         if (!Rs2Inventory.hasItem(COAL)) {
             Rs2Bank.withdrawAll(COAL);
             sleep(500, 1200);
-            int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 2.5); // Adjust mean and deviation as needed
-            if (randomThreshold > 3) {
-                Rs2Bank.closeBank();
-                sleep(500, 1200);
-            }
             return;
         }
         boolean fullCoalBag = Rs2Inventory.interact(coalBag, "Fill");
         if (!fullCoalBag)
             return;
+        sleep(500, 1200);
+        int randomThreshold = (int) Rs2Random.truncatedGauss(0, 5, 2.5); // Adjust mean and deviation as needed
+        Microbot.log("Random closeBank Threshold: " + randomThreshold);
+        if (randomThreshold > 3) {
+            Rs2Bank.closeBank();
+            Microbot.log("Random closeBank");
+            sleep(500, 1200);
+        }
         depositOre();
 
     }
@@ -595,7 +591,7 @@ public class BlastoiseFurnaceScript extends Script {
             Rs2GameObject.interact(ObjectID.CONVEYOR_BELT, "Put-ore-on");
             Rs2Inventory.waitForInventoryChanges(10000);
         }
-        if (this.config.getBars().isRequiresCoalBag()) {
+        if (config.getBars().isRequiresCoalBag()) {
 
             Rs2Inventory.interact(coalBag, "Empty");
             Rs2Inventory.waitForInventoryChanges(3000);

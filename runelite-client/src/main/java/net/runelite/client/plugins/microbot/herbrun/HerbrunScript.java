@@ -39,7 +39,6 @@ public class HerbrunScript extends Script {
     private final HerbrunPlugin plugin;
     private final HerbrunConfig config;
     private HerbPatch currentPatch;
-    static int invSetupRetries;
     @Inject
     ClientThread clientThread;
     private boolean initialized = false;
@@ -68,12 +67,10 @@ public class HerbrunScript extends Script {
                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                     if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                            plugin.reportFinished("Failed to load inventory setup", false);
-                            return;
-                        }
+                        plugin.reportFinished("Failed to load inventory setup",false);
+                        return;
                     }
-                    if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+                    Rs2Bank.closeBank();
                 }
 
                 log("Will visit " + herbPatches.size() + " herb patches");
