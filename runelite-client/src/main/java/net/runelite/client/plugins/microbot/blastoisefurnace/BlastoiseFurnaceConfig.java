@@ -6,6 +6,7 @@ package net.runelite.client.plugins.microbot.blastoisefurnace;
 
 import net.runelite.client.config.*;
 import net.runelite.client.plugins.microbot.blastoisefurnace.enums.Bars;
+import net.runelite.client.plugins.microbot.inventorysetups.InventorySetup;
 
 @ConfigGroup("blastoisefurnace")
 @ConfigInformation("Must have Ice Gloves or smiths gloves (i) equiped<br /><br />If not doing gold bars coal bag is required. <br /><br /> Must have stamina and energy potions in bank<br /><br /> Handles Foreman for < 60 Smithing.<br /><br /> If doing gold bars you must have Goldsmiths Gauntlet and bank your coal bag<br /><br />Current version does not support  coffer refill<br /><br />")
@@ -34,6 +35,31 @@ public interface BlastoiseFurnaceConfig extends Config {
     default Bars getBars() {
         return Bars.STEEL_BAR;
     }
+
+    @ConfigItem(
+            keyName = "World",
+            name = "World",
+            description = "Blast Furnace world",
+            position = 2,
+            section = "bFSettings"
+    )
+
+    default int world() {
+        return 358;
+    }
+
+    @ConfigItem(
+            keyName = "inventorySetup",
+            name = "Inventory Setup",
+            description = "Inventory setup to use",
+            position = 1,
+            section = "bFSettings"
+    )
+    default InventorySetup inventorySetup() {
+        return null;
+    }
+
+
     @ConfigSection(
             name = "Credits",
             description = "Credits",
