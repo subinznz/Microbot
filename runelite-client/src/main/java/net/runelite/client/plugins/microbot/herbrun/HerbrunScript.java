@@ -66,11 +66,16 @@ public class HerbrunScript extends Script {
                 var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                    Rs2Bank.openBank();
+                    sleep(500, 1200);
+                    Rs2Bank.depositEquipment();
                     if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                        plugin.reportFinished("Failed to load inventory setup",false);
-                        return;
+                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                            plugin.reportFinished("Failed to load inventory setup", false);
+                            return;
+                        }
                     }
-                    Rs2Bank.closeBank();
+                    if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                 }
 
                 log("Will visit " + herbPatches.size() + " herb patches");

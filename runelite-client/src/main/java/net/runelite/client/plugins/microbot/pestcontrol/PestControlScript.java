@@ -1,10 +1,7 @@
 package net.runelite.client.plugins.microbot.pestcontrol;
 
 import com.google.common.collect.ImmutableSet;
-import net.runelite.api.NPCComposition;
-import net.runelite.api.NpcID;
-import net.runelite.api.ObjectID;
-import net.runelite.api.Skill;
+import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
@@ -91,13 +88,15 @@ public class PestControlScript extends Script {
 
                 if (initialise && !isInPestControl && !isInBoat) {
                     Microbot.log("Initialising");
-                    if (Rs2Player.getWorld() != config.world()) {
-                        Microbot.hopToWorld(config.world());
-                        sleep(1000, 3000);
-                        Microbot.hopToWorld(config.world());
-                        sleepUntil(() -> Rs2Player.getWorld() == config.world(), 7000);
+                    if (Microbot.getClient().getWorld() != config.world()) {
+                        Microbot.log("Hopping world to: "+config.world());
+                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+                        boolean isHopped = Microbot.hopToWorld(config.world());
+                        if (!isHopped) return;
+                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
+                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
                     }
-                    if (Rs2Player.getWorldLocation().getRegionID() == 10537 && Rs2Player.getWorld() == config.world()) {
+                    if (Rs2Player.getWorldLocation().getRegionID() == 10537 && Microbot.getClient().getWorld() == config.world()) {
                         var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                         Microbot.log("Starting Inv Setup");
                         try {
@@ -108,8 +107,8 @@ public class PestControlScript extends Script {
                                         plugin.reportFinished("Failed to load inventory setup", false);
                                         return;
                                     }
-
                                 }
+                                if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                             } else {
                                 Microbot.log("Inv Setup Finished");
                                 if (Rs2Bank.isOpen()) Rs2Bank.closeBank();

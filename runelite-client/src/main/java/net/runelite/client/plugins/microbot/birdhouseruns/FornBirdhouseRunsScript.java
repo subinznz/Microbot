@@ -54,6 +54,9 @@ public class FornBirdhouseRunsScript extends Script {
                     var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                     if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                         Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                        Rs2Bank.openBank();
+                        sleep(500, 1200);
+                        Rs2Bank.depositEquipment();
                         if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                             if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                 Microbot.log("Failed to load inventory setup");

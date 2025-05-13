@@ -101,32 +101,36 @@ public class BlastoiseFurnaceScript extends Script {
                         if (Rs2Player.getWorldLocation().getRegionID() == 7757) {
                             var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                             Microbot.log("Starting Inv Setup");
-                                try {
-                                    if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
-                                        sleep(500, 1200);
-                                        Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                            try {
+                                if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                                    Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
+                                    Rs2Bank.openBank();
+                                    sleep(500, 1200);
+                                    Rs2Bank.depositEquipment();
+                                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                         if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                             plugin.reportFinished("Failed to load inventory setup", false);
                                             return;
                                         }
                                     }
-                                    Microbot.log("Inv Setup Finished");
-                                    if (Microbot.getClient().getWorld() != config.world()) {
-                                        Microbot.log("Hopping world to: "+config.world());
-                                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
-                                        boolean isHopped = Microbot.hopToWorld(config.world());
-                                        if (!isHopped) return;
-                                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
-                                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
-                                    }
-                                    state = State.BANKING;
-
-                                } catch (NullPointerException e) {
-                                    throw new RuntimeException("Foreman thinks should reselect the Inventory setup again");
                                 }
-
+                            } catch (NullPointerException e) {
+                                throw new RuntimeException("Foreman thinks should reselect the Inventory setup again");
+                            }
+                            Microbot.log("Inv Setup Finished");
+                            Microbot.log("Currently in: "+Microbot.getClient().getWorld());
+                            if (Microbot.getClient().getWorld() != config.world()) {
+                                Microbot.log("Hopping to: "+config.world());
+                                if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+                                boolean isHopped = Microbot.hopToWorld(config.world());
+                                if (!isHopped) return;
+                                sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
+                                sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
+                            }
+                            state = State.BANKING;
                         } else {
                             Microbot.log("Walking to BlastFurnace");
+                            if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                             Rs2Walker.walkTo(new WorldPoint(1948, 4957, 0));
                         }
                         break;
