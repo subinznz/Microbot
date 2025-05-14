@@ -64,7 +64,7 @@ public class BlastoiseFurnaceScript extends Script {
 
     private boolean hasRequiredOresForSmithing() {
         int primaryOre = currentBars.getPrimaryOre();
-        int secondaryOre = currentBars.getSecondaryOre() == null ? -1 : config.getPrimaryBars().getSecondaryOre();
+        int secondaryOre = currentBars.getSecondaryOre() == null ? -1 : currentBars.getSecondaryOre();
         boolean hasPrimaryOre = Rs2Bank.hasItem(primaryOre);
         boolean hasSecondaryOre = secondaryOre != -1 && Rs2Bank.hasItem(secondaryOre);
         return hasPrimaryOre && hasSecondaryOre ;
@@ -137,7 +137,7 @@ public class BlastoiseFurnaceScript extends Script {
                             Microbot.log("Opening bank");
                             Rs2Bank.openBank();
                         }
-                        if (config.getPrimaryBars().isRequiresCoalBag() && !Rs2Inventory.contains(coalBag)) {
+                        if (currentBars.isRequiresCoalBag() && !Rs2Inventory.contains(coalBag)) {
                             if (!Rs2Bank.hasItem(coalBag)) {
                                 Microbot.showMessage("No coal bag found in inventory and bank.");
                                 this.shutdown();
@@ -146,7 +146,7 @@ public class BlastoiseFurnaceScript extends Script {
                             Rs2Bank.withdrawItem(coalBag);
                         }
 
-                        if (config.getPrimaryBars().isRequiresGoldsmithGloves()) {
+                        if (currentBars.isRequiresGoldsmithGloves()) {
                             hasGauntlets = Rs2Inventory.contains(ItemID.GOLDSMITH_GAUNTLETS) || Rs2Equipment.isWearing(ItemID.GOLDSMITH_GAUNTLETS);
                             if (!hasGauntlets) {
                                 if (!Rs2Bank.hasItem(ItemID.GOLDSMITH_GAUNTLETS)) {
@@ -206,9 +206,9 @@ public class BlastoiseFurnaceScript extends Script {
                         }
                         break;
                     case SMITHING:
-                        System.out.println("clicking conveyor");
+                        Microbot.log("clicking conveyor");
 
-                        if (barsInDispenser(config.getPrimaryBars()) > 0) {
+                        if (barsInDispenser(currentBars) > 0) {
                             handleDispenserLooting();
                         }
 
@@ -231,7 +231,7 @@ public class BlastoiseFurnaceScript extends Script {
             Rs2Bank.openBank();
             sleepUntil(Rs2Bank::isOpen, 20000);
         }
-        Rs2Bank.depositOne(config.getPrimaryBars().getPrimaryOre());
+        Rs2Bank.depositOne(currentBars.getPrimaryOre());
         sleep(500, 1200);
         Rs2Bank.depositOne(ItemID.COAL);
         sleep(500, 1200);
@@ -325,7 +325,7 @@ public class BlastoiseFurnaceScript extends Script {
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(currentBars) > 0, 10000);
         sleep(400, 700);
     }
 
@@ -339,7 +339,7 @@ public class BlastoiseFurnaceScript extends Script {
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(currentBars) > 0, 10000);
         sleep(400, 700);
     }
 
@@ -374,13 +374,13 @@ public class BlastoiseFurnaceScript extends Script {
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
 
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(currentBars) > 0, 10000);
         Rs2Inventory.interact(ItemID.ICE_GLOVES, "wear");
         Rs2Inventory.waitForInventoryChanges(2000);
     }
 
     private void retrieveItemsForCurrentFurnaceInteraction() {
-        switch (config.getPrimaryBars()) {
+        switch (currentBars) {
             case GOLD_BAR:
                 handleGold();
                 break;
@@ -600,7 +600,7 @@ public class BlastoiseFurnaceScript extends Script {
             Rs2GameObject.interact(ObjectID.CONVEYOR_BELT, "Put-ore-on");
             Rs2Inventory.waitForInventoryChanges(10000);
         }
-        if (config.getPrimaryBars().isRequiresCoalBag()) {
+        if (currentBars.isRequiresCoalBag()) {
 
             Rs2Inventory.interact(coalBag, "Empty");
             Rs2Inventory.waitForInventoryChanges(3000);
@@ -650,7 +650,7 @@ public class BlastoiseFurnaceScript extends Script {
     }
 
     private void equipGoldSmithGauntlets() {
-        if (config.getPrimaryBars().isRequiresGoldsmithGloves()) {
+        if (currentBars.isRequiresGoldsmithGloves()) {
             Rs2Inventory.interact(ItemID.GOLDSMITH_GAUNTLETS, "Wear");
         }
     }
