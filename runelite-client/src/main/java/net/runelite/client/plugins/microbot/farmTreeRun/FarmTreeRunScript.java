@@ -333,6 +333,10 @@ public class FarmTreeRunScript extends Script {
 
             if (Rs2Bank.hasItem(ItemID.ENERGY_POTION4)) {
                 items.add(new FarmingItem(ItemID.ENERGY_POTION4, 1));
+            } else if (Rs2Bank.hasItem(ItemID.ENERGY_POTION3)) {
+                items.add(new FarmingItem(ItemID.ENERGY_POTION3, 1));
+            } else if (Rs2Bank.hasItem(ItemID.ENERGY_POTION2)) {
+                items.add(new FarmingItem(ItemID.ENERGY_POTION2, 1));
             }
 
             if (isCompostEnabled(config)) {
