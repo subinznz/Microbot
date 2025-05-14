@@ -26,21 +26,32 @@ public interface BlastoiseFurnaceConfig extends Config {
 
 
     @ConfigItem(
-            keyName = "Bars",
-            name = "Bars",
+            keyName = "Primary Bars",
+            name = "Primary Bars",
             description = "Bars",
             position = 1,
             section = "bFSettings"
     )
-    default Bars getBars() {
-        return Bars.STEEL_BAR;
+    default Bars getPrimaryBars() {
+        return Bars.RUNITE_BAR;
+    }
+
+    @ConfigItem(
+            keyName = "Secondary Bars",
+            name = "Secondary Bars",
+            description = "Bars",
+            position = 2,
+            section = "bFSettings"
+    )
+    default Bars getSecondaryBars() {
+        return Bars.ADAMANTITE_BAR;
     }
 
     @ConfigItem(
             keyName = "World",
             name = "World",
             description = "Blast Furnace world",
-            position = 2,
+            position = 3,
             section = "bFSettings"
     )
 

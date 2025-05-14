@@ -107,24 +107,24 @@ public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin 
             if (inventory.getItemContainer().contains(ItemID.COAL) && BlastoiseFurnaceScript.state != State.SMITHING) {
                 if (BlastoiseFurnaceScript.coalBagEmpty) BlastoiseFurnaceScript.coalBagEmpty = false;
             }
-            if (inventory.getItemContainer().contains(config.getBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 if(BlastoiseFurnaceScript.primaryOreEmpty){ BlastoiseFurnaceScript.primaryOreEmpty=false; }
             }
-            if (!inventory.getItemContainer().contains(config.getBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(!BlastoiseFurnaceScript.primaryOreEmpty){ BlastoiseFurnaceScript.primaryOreEmpty=true; }
             }
-            if (inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 //TODO ffs for some reason the print fixes it when run from IDE, but compiled still bugs out...
                 if(BlastoiseFurnaceScript.secondaryOreEmpty){ System.out.println("secondary set to not empty"); BlastoiseFurnaceScript.secondaryOreEmpty=false; }
             }
-            if (!inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(!BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=true; }
             }
             //TODO added
-            if (!inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 if(!BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=true; }
             }
-            if (inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=false; }
             }
         }

@@ -6,10 +6,6 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 
 import net.runelite.api.GameState;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.client.plugins.microbot.herbrun.HerbrunConfig;
-import net.runelite.client.plugins.microbot.herbrun.HerbrunPlugin;
-import net.runelite.client.plugins.microbot.shortestpath.ShortestPathPlugin;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
 import net.runelite.client.plugins.microbot.util.antiban.Rs2Antiban;
 import net.runelite.client.plugins.microbot.util.antiban.Rs2AntibanSettings;
@@ -53,6 +49,7 @@ public class BlastoiseFurnaceScript extends Script {
     static boolean secondaryOreEmpty;
     private final BlastoiseFurnacePlugin plugin;
     private final BlastoiseFurnaceConfig config;
+    public Bars currentBars;
 
 
     @Inject
@@ -66,22 +63,22 @@ public class BlastoiseFurnaceScript extends Script {
     }
 
     private boolean hasRequiredOresForSmithing() {
-        int primaryOre = config.getBars().getPrimaryOre();
-        int secondaryOre = config.getBars().getSecondaryOre() == null ? -1 : config.getBars().getSecondaryOre();
+        int primaryOre = currentBars.getPrimaryOre();
+        int secondaryOre = currentBars.getSecondaryOre() == null ? -1 : config.getPrimaryBars().getSecondaryOre();
         boolean hasPrimaryOre = Rs2Bank.hasItem(primaryOre);
         boolean hasSecondaryOre = secondaryOre != -1 && Rs2Bank.hasItem(secondaryOre);
-        return hasPrimaryOre && hasSecondaryOre;
+        return hasPrimaryOre && hasSecondaryOre ;
     }
 
     public boolean run(BlastoiseFurnaceConfig config) {
         staminaTimer = 0;
         Microbot.enableAutoRunOn = false;
         state = State.INITIALISE;
-        primaryOreEmpty = !Rs2Inventory.hasItem(config.getBars().getPrimaryOre());
-        secondaryOreEmpty = !Rs2Inventory.hasItem(config.getBars().getSecondaryOre());
+        currentBars = config.getPrimaryBars();
+        primaryOreEmpty = !Rs2Inventory.hasItem(currentBars.getPrimaryOre());
+        secondaryOreEmpty = !Rs2Inventory.hasItem(currentBars.getSecondaryOre());
         Rs2Antiban.resetAntibanSettings();
         applyAntiBanSettings();
-
 
         this.mainScheduledFuture = this.scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
@@ -140,7 +137,7 @@ public class BlastoiseFurnaceScript extends Script {
                             Microbot.log("Opening bank");
                             Rs2Bank.openBank();
                         }
-                        if (config.getBars().isRequiresCoalBag() && !Rs2Inventory.contains(coalBag)) {
+                        if (config.getPrimaryBars().isRequiresCoalBag() && !Rs2Inventory.contains(coalBag)) {
                             if (!Rs2Bank.hasItem(coalBag)) {
                                 Microbot.showMessage("No coal bag found in inventory and bank.");
                                 this.shutdown();
@@ -149,7 +146,7 @@ public class BlastoiseFurnaceScript extends Script {
                             Rs2Bank.withdrawItem(coalBag);
                         }
 
-                        if (config.getBars().isRequiresGoldsmithGloves()) {
+                        if (config.getPrimaryBars().isRequiresGoldsmithGloves()) {
                             hasGauntlets = Rs2Inventory.contains(ItemID.GOLDSMITH_GAUNTLETS) || Rs2Equipment.isWearing(ItemID.GOLDSMITH_GAUNTLETS);
                             if (!hasGauntlets) {
                                 if (!Rs2Bank.hasItem(ItemID.GOLDSMITH_GAUNTLETS)) {
@@ -182,12 +179,16 @@ public class BlastoiseFurnaceScript extends Script {
                         }
 
                         if (!this.hasRequiredOresForSmithing()) {
+                            if(currentBars == config.getPrimaryBars()){
+                                Microbot.log("Out of Primary Bar ores. Switching to secondary");
+                                currentBars = config.getSecondaryBars();
+                                return;
+                            }
                             Microbot.log("Out of ores. Walking you out for coffer safety");
                             Rs2Walker.walkTo(new WorldPoint(2930, 10196, 0));
                             Rs2Player.logout();
                             plugin.reportFinished("Out of ores.",false);
                             this.shutdown();
-
                         }
 
                         if (!Rs2Player.hasStaminaBuffActive() && Microbot.getClient().getEnergy() < 8100) {
@@ -207,7 +208,7 @@ public class BlastoiseFurnaceScript extends Script {
                     case SMITHING:
                         System.out.println("clicking conveyor");
 
-                        if (barsInDispenser(config.getBars()) > 0) {
+                        if (barsInDispenser(config.getPrimaryBars()) > 0) {
                             handleDispenserLooting();
                         }
 
@@ -230,7 +231,7 @@ public class BlastoiseFurnaceScript extends Script {
             Rs2Bank.openBank();
             sleepUntil(Rs2Bank::isOpen, 20000);
         }
-        Rs2Bank.depositOne(config.getBars().getPrimaryOre());
+        Rs2Bank.depositOne(config.getPrimaryBars().getPrimaryOre());
         sleep(500, 1200);
         Rs2Bank.depositOne(ItemID.COAL);
         sleep(500, 1200);
@@ -298,7 +299,11 @@ public class BlastoiseFurnaceScript extends Script {
     }
 
     private void retrieveCoalAndPrimary() {
-        int primaryOre = config.getBars().getPrimaryOre();
+
+        depositItems("Energy potion");
+        depositItems("Stamina potion");
+
+        int primaryOre = currentBars.getPrimaryOre();
         if (!Rs2Inventory.hasItem(primaryOre)) {
             Rs2Bank.withdrawAll(primaryOre);
             sleep(500, 1200);
@@ -320,13 +325,13 @@ public class BlastoiseFurnaceScript extends Script {
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
         sleep(400, 700);
     }
 
 
     private void retrievePrimary() {
-        int primaryOre = config.getBars().getPrimaryOre();
+        int primaryOre = currentBars.getPrimaryOre();
         if (!Rs2Inventory.hasItem(primaryOre)) {
             Rs2Bank.withdrawAll(primaryOre);
             return;
@@ -334,7 +339,7 @@ public class BlastoiseFurnaceScript extends Script {
         depositOre();
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
         sleep(400, 700);
     }
 
@@ -369,13 +374,13 @@ public class BlastoiseFurnaceScript extends Script {
         Rs2Walker.walkFastCanvas(new WorldPoint(1940, 4962, 0));
 
         sleep(3400);
-        sleepUntil(() -> barsInDispenser(config.getBars()) > 0, 10000);
+        sleepUntil(() -> barsInDispenser(config.getPrimaryBars()) > 0, 10000);
         Rs2Inventory.interact(ItemID.ICE_GLOVES, "wear");
         Rs2Inventory.waitForInventoryChanges(2000);
     }
 
     private void retrieveItemsForCurrentFurnaceInteraction() {
-        switch (config.getBars()) {
+        switch (config.getPrimaryBars()) {
             case GOLD_BAR:
                 handleGold();
                 break;
@@ -595,7 +600,7 @@ public class BlastoiseFurnaceScript extends Script {
             Rs2GameObject.interact(ObjectID.CONVEYOR_BELT, "Put-ore-on");
             Rs2Inventory.waitForInventoryChanges(10000);
         }
-        if (config.getBars().isRequiresCoalBag()) {
+        if (config.getPrimaryBars().isRequiresCoalBag()) {
 
             Rs2Inventory.interact(coalBag, "Empty");
             Rs2Inventory.waitForInventoryChanges(3000);
@@ -645,7 +650,7 @@ public class BlastoiseFurnaceScript extends Script {
     }
 
     private void equipGoldSmithGauntlets() {
-        if (config.getBars().isRequiresGoldsmithGloves()) {
+        if (config.getPrimaryBars().isRequiresGoldsmithGloves()) {
             Rs2Inventory.interact(ItemID.GOLDSMITH_GAUNTLETS, "Wear");
         }
     }
@@ -654,6 +659,18 @@ public class BlastoiseFurnaceScript extends Script {
         Rs2AntibanSettings.antibanEnabled = true;
         Rs2AntibanSettings.naturalMouse = true;
         Rs2AntibanSettings.devDebug = true;
+        Rs2AntibanSettings.randomIntervals = true;
+        Rs2AntibanSettings.simulateFatigue = true;
+        Rs2AntibanSettings.simulateAttentionSpan = true;
+        Rs2AntibanSettings.behavioralVariability = true;
+        Rs2AntibanSettings.nonLinearIntervals = true;
+        Rs2AntibanSettings.simulateMistakes = true;
+        Rs2AntibanSettings.moveMouseOffScreen = true;
+        Rs2AntibanSettings.moveMouseRandomly = true;
+        Rs2AntibanSettings.contextualVariability = true;
+        Rs2AntibanSettings.dynamicIntensity = true;
+        Rs2AntibanSettings.dynamicActivity = true;
+
     }
 
     @Override
