@@ -101,7 +101,7 @@ public class HerbrunScript extends Script {
 
             if (!currentPatch.isInRange(10)) {
                 HerbrunPlugin.status = "Walking to " + currentPatch.getRegionName();
-                Rs2Walker.walkTo(currentPatch.getLocation(), 20);
+                Rs2Walker.walkTo(currentPatch.getLocation(), 5);
 
             }
 
