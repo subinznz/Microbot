@@ -137,6 +137,17 @@ public class FarmTreeRunScript extends Script {
                             if (!handledPatch)
                                 return;
                         }
+                        botStatus = HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
+                        break;
+                    case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
+                        patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
+                        if (config.brimhavenFruitTreePatch()) {
+                            if (walkToLocation(patch.getLocation())) {
+                                handledPatch = handlePatch(config, patch);
+                            }
+                            if (!handledPatch)
+                                return;
+                        }
                         botStatus = HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
                         break;
                     case HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH:
@@ -206,17 +217,6 @@ public class FarmTreeRunScript extends Script {
                     case HANDLE_VARROCK_TREE_PATCH:
                         patch = Patch.VARROCK_TREE_PATCH;
                         if (config.varrockTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
-                        patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
-                        if (config.brimhavenFruitTreePatch()) {
                             if (walkToLocation(patch.getLocation())) {
                                 handledPatch = handlePatch(config, patch);
                             }

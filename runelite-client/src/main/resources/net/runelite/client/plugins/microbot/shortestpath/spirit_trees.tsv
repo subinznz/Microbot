@@ -92,18 +92,18 @@
 2613 3856 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
 2612 3856 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
 # Brimhaven							
-2800 3202 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2800 3203 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2800 3204 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2801 3205 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2802 3205 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2803 3205 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2804 3204 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2804 3203 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2804 3202 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2803 3201 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2802 3201 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
-2801 3201 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
+2800 3202 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2800 3203 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2800 3204 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2801 3205 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2802 3205 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2803 3205 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2804 3204 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2804 3203 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2804 3202 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2803 3201 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2802 3201 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
+2801 3201 0		Travel;Spirit Tree;8355		Tree Gnome Village;The Grand Tree
 # Hosidius							
 1691 3541 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
 1691 3542 0		Travel;Spirit Tree;8355	83 Farming	Tree Gnome Village;The Grand Tree			4771=20;4772=20
@@ -162,7 +162,7 @@
 # Etceteria							
 	2613 3855 0		83 Farming	Tree Gnome Village;The Grand Tree	2	8: Etceteria	4771=20;4772=20
 # Brimhaven							
-	2800 3203 0		83 Farming	Tree Gnome Village;The Grand Tree	2	9: Brimhaven	4771=20;4772=20
+	2800 3203 0			Tree Gnome Village;The Grand Tree	2	9: Brimhaven
 # Hosidius							
 	1693 3540 0		83 Farming	Tree Gnome Village;The Grand Tree	2	A: Hosidius	4771=20;4772=20
 # Farming Guild							
