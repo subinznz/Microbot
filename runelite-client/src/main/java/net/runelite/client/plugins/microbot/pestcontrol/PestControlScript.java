@@ -244,7 +244,7 @@ public class PestControlScript extends Script {
             Rs2GameObject.interact(ObjectID.LADDER_14314);
         }
         sleepUntil(() -> Microbot.getClient().getWidget(WidgetInfo.PEST_CONTROL_BOAT_INFO) == null, 3000);
-
+        Rs2Walker.walkTo(new WorldPoint(2667, 2653, 0),2);
     }
 
     private boolean handleAttack(PestControlNpc npcType, int priority) {

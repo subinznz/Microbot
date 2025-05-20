@@ -2,6 +2,7 @@ package net.runelite.client.plugins.microbot.herbrun;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.microbot.Microbot;
@@ -63,6 +64,9 @@ public class HerbrunScript extends Script {
                     this.shutdown();
                     return;
                 }
+
+                log("Will visit " + herbPatches.size() + " herb patches");
+
                 var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
@@ -78,7 +82,6 @@ public class HerbrunScript extends Script {
                     if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                 }
 
-                log("Will visit " + herbPatches.size() + " herb patches");
             }
             if (!super.run()) return;
 
@@ -89,9 +92,11 @@ public class HerbrunScript extends Script {
             if (currentPatch == null) {
                 HerbrunPlugin.status = "Finishing up";
                 if (config.goToBank()) {
+                    Rs2Walker.walkTo(new WorldPoint(3164, 3487, 0),3);
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint());
-                    if (!Rs2Bank.isOpen()) Rs2Bank.openBank();
+                    Rs2Bank.openBank();
                     Rs2Bank.depositAll();
+                    Rs2Bank.closeBank();
                 }
                 HerbrunPlugin.status = "Finished";
                 plugin.reportFinished("Herb run finished",true);
