@@ -91,6 +91,8 @@ public class Rs2InventorySetup {
         if (!Rs2Bank.isOpen()) {
             return false;
         }
+
+        Microbot.log("InvSetup: Loading inventory");
         Rs2Bank.depositAllExcept(itemsToNotDeposit());
         Map<Integer, List<InventorySetupsItem>> groupedByItems = inventorySetup.getInventory().stream().collect(Collectors.groupingBy(InventorySetupsItem::getId));
 
@@ -200,6 +202,7 @@ public class Rs2InventorySetup {
             return false;
         }
 
+        Microbot.log("InvSetup: Loading Equipment");
         //Clear inventory if full
         if (Rs2Inventory.isFull()) {
             Rs2Bank.depositAll();
@@ -296,7 +299,9 @@ public class Rs2InventorySetup {
      * @return true if the inventory matches the setup, false otherwise.
      */
     public boolean doesInventoryMatch() {
+        Microbot.log("InvSetup: doesInventoryMatch");
         if(inventorySetup ==null || inventorySetup.getInventory() == null) {
+            Microbot.log("Inventory setup missing");
             return false;
         }
         Map<Integer, List<InventorySetupsItem>> groupedByItems = inventorySetup.getInventory().stream().collect(Collectors.groupingBy(InventorySetupsItem::getId));
@@ -328,19 +333,21 @@ public class Rs2InventorySetup {
      * @return true if all equipment items match the setup, false otherwise.
      */
     public boolean doesEquipmentMatch() {
+        Microbot.log("InvSetup: doesEquipmentMatch");
         if(inventorySetup ==null || inventorySetup.getEquipment() == null) {
+            Microbot.log("Inventory setup is missing");
             return false;
         }
         for (InventorySetupsItem inventorySetupsItem : inventorySetup.getEquipment()) {
             if (inventorySetupsItem.getId() == -1) continue;
             if (inventorySetupsItem.isFuzzy()) {
                 if (!Rs2Equipment.isWearing(inventorySetupsItem.getName(), false)) {
-                    Microbot.log("Missing item " + inventorySetupsItem.getName());
+                    Microbot.log("Missing equipped fuzzy item: " + inventorySetupsItem.getName());
                     return false;
                 }
             } else {
                 if (!Rs2Equipment.isWearing(inventorySetupsItem.getName(), true)) {
-                    Microbot.log("Missing item " + inventorySetupsItem.getName());
+                    Microbot.log("Missing equipped item: " + inventorySetupsItem.getName());
                     return false;
                 }
             }

@@ -48,7 +48,7 @@ public class FornBirdhouseRunsScript extends Script {
     public boolean run() {
         Microbot.enableAutoRunOn = true;
         botStatus = states.GEARING;
-        mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
                 if (!Microbot.isLoggedIn()) return;
              
@@ -65,6 +65,7 @@ public class FornBirdhouseRunsScript extends Script {
                     if (hasInventorySetup) {
                         var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                         if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                            Microbot.log("Starting Inventory Setup");
                             Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                             if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                 Microbot.log("Failed to load inventory setup");
@@ -72,7 +73,7 @@ public class FornBirdhouseRunsScript extends Script {
                                 this.shutdown();
                                 return;
                             }
-                            if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+                            Rs2Bank.closeBank();
                         }
                     }else{
                         Microbot.log("Failed to load inventory, inventory setup not found:"+ config.inventorySetup());
