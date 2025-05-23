@@ -17,6 +17,7 @@ import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugi
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
+import net.runelite.client.plugins.microbot.util.Global;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
@@ -58,7 +59,10 @@ public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin 
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            BlastoiseFurnaceScript.shutdown();
+            if (BlastoiseFurnaceScript != null && BlastoiseFurnaceScript.isRunning()) {
+                Microbot.log("Shutting down BlastoiseFurnaceScript script due to soft stop event");
+                BlastoiseFurnaceScript.shutdown();
+            }
             Microbot.stopPlugin(this);
         }
     }

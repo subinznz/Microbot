@@ -82,7 +82,7 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
 
             if (pestControlScript != null) {
                 pestControlScript.shutdown();
-                Global.sleep(1000);
+                Global.sleep(10000);
             }
 
             if(pestControlScript.isInBoat()) {
@@ -91,7 +91,7 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
                 Global.sleepUntil(pestControlScript::isOutside, 5000);
             }
             Microbot.log("Reached outside");
-            Microbot.stopPlugin(this);
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }
 

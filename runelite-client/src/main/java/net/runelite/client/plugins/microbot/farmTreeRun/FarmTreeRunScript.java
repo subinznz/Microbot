@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.microbot.blastoisefurnace.BlastoiseFurnaceConfig;
+import net.runelite.client.plugins.microbot.blastoisefurnace.BlastoiseFurnacePlugin;
 import net.runelite.client.plugins.microbot.farmTreeRun.enums.FarmTreeRunState;
 import net.runelite.client.plugins.microbot.farmTreeRun.enums.FruitTreeEnum;
 import net.runelite.client.plugins.microbot.farmTreeRun.enums.TreeEnums;
@@ -22,6 +24,7 @@ import net.runelite.client.plugins.microbot.util.npc.Rs2NpcModel;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +45,8 @@ public class FarmTreeRunScript extends Script {
     public static boolean test = false;
     public static Integer compostItemId = null;
     private List<FarmingItem> items = new ArrayList<>();
-
+    private final FarmTreeRunPlugin plugin;
+    private final FarmTreeRunConfig config;
     private enum TreeKind {
         FRUIT_TREE,
         TREE
@@ -51,6 +55,13 @@ public class FarmTreeRunScript extends Script {
     private enum PaymentKind {
         PROTECT,
         CLEAR
+    }
+
+
+    @Inject
+    public FarmTreeRunScript(FarmTreeRunPlugin plugin, FarmTreeRunConfig config) {
+        this.plugin = plugin;
+        this.config = config;
     }
 
     @Getter
@@ -255,6 +266,8 @@ public class FarmTreeRunScript extends Script {
                                 }
                         );
                         shutdown();
+                        plugin.reportFinished("Scheduled with Wassuppzzz", true);
+
                         break;
                 }
 
@@ -273,6 +286,8 @@ public class FarmTreeRunScript extends Script {
         if (getSelectedTreePatches(config).isEmpty() && getSelectedFruitTreePatches(config).isEmpty()) {
             Microbot.showMessage("You must select at least one patch. Shut down.");
             shutdown();
+            plugin.reportFinished("Patch failure", false);
+
         }
     }
 
@@ -438,6 +453,8 @@ public class FarmTreeRunScript extends Script {
             Microbot.showMessage("Not enough items: " + Microbot.getClientThread().runOnClientThreadOptional(() -> Microbot.getClient().getItemDefinition(item.getItemId()).getName()) + ". " +
                     "Need " + item.getQuantity() + ". Shut down.");
             shutdown();
+            plugin.reportFinished("Inventory failed", false);
+
         }
     }
 
@@ -575,6 +592,8 @@ public class FarmTreeRunScript extends Script {
                 return true;
             }
             shutdown();
+            plugin.reportFinished("Failed gardener money payment.", false);
+
             System.out.println("Failed gardener money payment.");
             return false;
         } else {
@@ -799,6 +818,8 @@ public class FarmTreeRunScript extends Script {
         if (rosie == null && nikkie == null) {
             Microbot.log("Gardeners in farming guild not found. Report this bug.");
             shutdown();
+            plugin.reportFinished("Gardeners in farming guild not found", false);
+
         } else if (nikkie != null && Rs2Player.distanceTo(nikkie.getWorldLocation()) <= 10) {
             npcToInteract = nikkie;
             paymentAction = "Pay (Fruit tree)";

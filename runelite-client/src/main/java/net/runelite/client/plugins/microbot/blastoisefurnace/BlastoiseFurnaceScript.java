@@ -35,6 +35,7 @@ import javax.inject.Inject;
 
 import static net.runelite.api.ItemID.COAL;
 import static net.runelite.api.ItemID.GOLD_ORE;
+import static net.runelite.api.gameval.VarbitID.BLAST_FURNACE_COFFER;
 
 public class BlastoiseFurnaceScript extends Script {
     static final int BAR_DISPENSER = 9092;
@@ -102,13 +103,16 @@ public class BlastoiseFurnaceScript extends Script {
                                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                                     if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                        Microbot.log("Retrying Inventory setup");
+                                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                             plugin.reportFinished("Failed to load inventory setup", false);
                                             return;
+                                        }
                                     }
                                     Rs2Bank.closeBank();
                                 }
                             } catch (NullPointerException e) {
-                                throw new RuntimeException("Foreman thinks should reselect the Inventory setup again");
+                                throw new RuntimeException("Foreman thinks you should reselect the Inventory setup again");
                             }
                             Microbot.log("Inv Setup Finished");
                             Microbot.log("Currently in: "+Microbot.getClient().getWorld());
@@ -184,6 +188,14 @@ public class BlastoiseFurnaceScript extends Script {
                             Rs2Walker.walkTo(new WorldPoint(2930, 10196, 0));
                             Rs2Player.logout();
                             plugin.reportFinished("Out of ores.",false);
+                            this.shutdown();
+                        }
+
+                        if (Microbot.getVarbitValue(BLAST_FURNACE_COFFER) < 1000) {
+                            Microbot.log("Ran out money in coffeer. Walking you out for coffer safety");
+                            Rs2Walker.walkTo(new WorldPoint(2930, 10196, 0));
+                            Rs2Player.logout();
+                            plugin.reportFinished("Out of money in coffer.",false);
                             this.shutdown();
                         }
 
@@ -671,6 +683,7 @@ public class BlastoiseFurnaceScript extends Script {
 
     @Override
     public void shutdown() {
+
         Microbot.log("Blast Furance about to shutdown");
         primaryOreEmpty = false;
         secondaryOreEmpty = false;

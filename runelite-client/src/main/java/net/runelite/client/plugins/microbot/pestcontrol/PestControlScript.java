@@ -104,8 +104,11 @@ public class PestControlScript extends Script {
                                 Microbot.log("Starting Inventory Setup");
                                 Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                                 if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                                    Microbot.log("Retrying Inventory Setup");
+                                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
                                         plugin.reportFinished("Failed to load inventory setup", false);
                                         return;
+                                    }
                                 }
                                 if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                             } else {

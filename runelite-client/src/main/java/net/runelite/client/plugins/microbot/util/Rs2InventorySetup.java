@@ -124,6 +124,8 @@ public class Rs2InventorySetup {
             }
 
             withdrawItem(inventorySetupsItem, withdrawQuantity);
+            Microbot.log("Withdrawing: "+inventorySetupsItem.getName()+" - "+withdrawQuantity);
+
         }
 
         sleep(1000);
@@ -247,14 +249,17 @@ public class Rs2InventorySetup {
 
                 if (Rs2Inventory.hasItem(inventorySetupsItem.getName())) {
                     Rs2Bank.wearItem(inventorySetupsItem.getName());
+                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     continue;
                 }
 
                 if (inventorySetupsItem.getQuantity() > 1) {
                     Rs2Bank.withdrawAllAndEquip(inventorySetupsItem.getName());
+                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 } else {
                     Rs2Bank.withdrawAndEquip(inventorySetupsItem.getName());
+                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 }
             } else {
@@ -262,13 +267,17 @@ public class Rs2InventorySetup {
                     continue;
                 if (Rs2Inventory.hasItem(inventorySetupsItem.getName())) {
                     Rs2Bank.wearItem(inventorySetupsItem.getName());
+                    Microbot.log("Equipping :"+inventorySetupsItem.getName());
                     continue;
                 }
                 if (inventorySetupsItem.getQuantity() > 1) {
                     Rs2Bank.withdrawAllAndEquip(inventorySetupsItem.getName());
+                    Microbot.log("Equipping : "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 } else {
                     Rs2Bank.withdrawAndEquip(inventorySetupsItem.getName());
+                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
+
                 }
             }
         }
