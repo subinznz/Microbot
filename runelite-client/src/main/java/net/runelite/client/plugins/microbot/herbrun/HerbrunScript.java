@@ -260,7 +260,9 @@ public class HerbrunScript extends Script {
 
     @Override
     public void shutdown() {
-        super.shutdown();
-        initialized = false;
+        if (isRunning()) {
+            super.shutdown();
+            initialized = false;
+        }
     }
 }

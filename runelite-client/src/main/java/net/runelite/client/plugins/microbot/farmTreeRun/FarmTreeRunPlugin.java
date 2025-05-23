@@ -55,11 +55,10 @@ public class FarmTreeRunPlugin extends Plugin implements SchedulablePlugin {
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            if (FarmTreeRunScript != null) {
+            if (FarmTreeRunScript != null && FarmTreeRunScript.isRunning()) {
                 FarmTreeRunScript.shutdown();
-                Global.sleep(10000);
             }
-            Microbot.stopPlugin(this);
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }
 

@@ -683,12 +683,12 @@ public class BlastoiseFurnaceScript extends Script {
 
     @Override
     public void shutdown() {
-
-        Microbot.log("Blast Furance about to shutdown");
-        primaryOreEmpty = false;
-        secondaryOreEmpty = false;
-        super.shutdown();
-        state = State.INITIALISE;
-
+        if(isRunning()) {
+            Microbot.log("Blast Furance about to shutdown");
+            primaryOreEmpty = false;
+            secondaryOreEmpty = false;
+            super.shutdown();
+            state = State.INITIALISE;
+        }
     }
 }

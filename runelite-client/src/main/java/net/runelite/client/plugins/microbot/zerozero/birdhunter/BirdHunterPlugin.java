@@ -7,6 +7,8 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
@@ -49,6 +51,17 @@ public class BirdHunterPlugin extends Plugin {
     protected void shutDown() {
         this.overlayManager.remove(this.birdHunterOverlay);
         birdHunterScript.shutdown();
+    }
+
+    @Subscribe
+    public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
+        if (event.getPlugin() == this) {
+            if (birdHunterScript != null && birdHunterScript.isRunning()) {
+
+                shutDown();
+            }
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
+        }
     }
 
     @Subscribe

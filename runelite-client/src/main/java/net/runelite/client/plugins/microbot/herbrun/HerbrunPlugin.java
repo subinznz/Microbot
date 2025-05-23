@@ -61,9 +61,11 @@ public class HerbrunPlugin extends Plugin implements SchedulablePlugin{
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            shutDown();
-            Global.sleep(10000);
-            Microbot.stopPlugin(this);
+            if (herbrunScript != null && herbrunScript.isRunning()) {
+
+                shutDown();
+            }
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }
      @Override     

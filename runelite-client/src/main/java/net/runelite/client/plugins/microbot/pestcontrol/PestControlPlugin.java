@@ -78,19 +78,22 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            Microbot.log("Scheduler about to turn off Pest Control");
+            if (pestControlScript != null && pestControlScript.isRunning()) {
 
-            if (pestControlScript != null) {
-                pestControlScript.shutdown();
-                Global.sleep(10000);
-            }
+                Microbot.log("Scheduler about to turn off Pest Control");
 
-            if(pestControlScript.isInBoat()) {
-                Microbot.log("Getting off boat");
-                pestControlScript.exitBoat();
-                Global.sleepUntil(pestControlScript::isOutside, 5000);
+                if (pestControlScript != null) {
+                    pestControlScript.shutdown();
+                    Global.sleep(10000);
+                }
+
+                if (pestControlScript.isInBoat()) {
+                    Microbot.log("Getting off boat");
+                    pestControlScript.exitBoat();
+                    Global.sleepUntil(pestControlScript::isOutside, 5000);
+                }
+                Microbot.log("Reached outside");
             }
-            Microbot.log("Reached outside");
             Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }

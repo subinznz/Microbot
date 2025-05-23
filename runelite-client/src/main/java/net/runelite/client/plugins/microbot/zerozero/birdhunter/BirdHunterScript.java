@@ -316,4 +316,10 @@ public class BirdHunterScript extends Script {
         if (hunterLevel >= 20) return 2;
         return 1;
     }
+
+    public void shutdown() {
+        if (isRunning()) {
+            super.shutdown();
+        }
+    }
 }

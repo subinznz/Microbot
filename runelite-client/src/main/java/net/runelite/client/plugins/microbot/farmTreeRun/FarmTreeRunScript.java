@@ -833,8 +833,10 @@ public class FarmTreeRunScript extends Script {
 
     @Override
     public void shutdown() {
-        items.clear();
-        super.shutdown();
+        if(isRunning()) {
+            items.clear();
+            super.shutdown();
+        }
     }
 }
 

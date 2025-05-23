@@ -356,9 +356,11 @@ public class PestControlScript extends Script {
 
     @Override
     public void shutdown() {
-        Microbot.log("Pest control about to shutdown");
-        initialise = true;
-        walkToCenter = false;
-        super.shutdown();
+        if(isRunning()) {
+            Microbot.log("Pest control about to shutdown");
+            initialise = true;
+            walkToCenter = false;
+            super.shutdown();
+        }
     }
 }

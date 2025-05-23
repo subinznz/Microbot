@@ -63,7 +63,7 @@ public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin 
                 Microbot.log("Shutting down BlastoiseFurnaceScript script due to soft stop event");
                 BlastoiseFurnaceScript.shutdown();
             }
-            Microbot.stopPlugin(this);
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }
 
