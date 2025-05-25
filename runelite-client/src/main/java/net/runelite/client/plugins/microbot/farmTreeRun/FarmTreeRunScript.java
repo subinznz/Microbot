@@ -347,6 +347,14 @@ public class FarmTreeRunScript extends Script {
             items.add(new FarmingItem(ItemID.RAKE, 1));
             items.add(new FarmingItem(ItemID.SEED_DIBBER, 1));
 
+            if (Rs2Bank.hasItem(ItemID.ENERGY_POTION4)) {
+                items.add(new FarmingItem(ItemID.ENERGY_POTION4, 1));
+            } else if (Rs2Bank.hasItem(ItemID.ENERGY_POTION3)) {
+                items.add(new FarmingItem(ItemID.ENERGY_POTION3, 1));
+            } else if (Rs2Bank.hasItem(ItemID.ENERGY_POTION2)) {
+                items.add(new FarmingItem(ItemID.ENERGY_POTION2, 1));
+            }
+
             if (isCompostEnabled(config)) {
                 if (Rs2Bank.hasItem(ItemID.BOTTOMLESS_COMPOST_BUCKET_22997)) {
                     compostItemId = ItemID.BOTTOMLESS_COMPOST_BUCKET_22997;
@@ -365,8 +373,10 @@ public class FarmTreeRunScript extends Script {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE4, 1));
                 } else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE5)) {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE5, 1));
-                } else {
+                } else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE6)) {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE6, 1));
+                } else {
+                    items.add(new FarmingItem(ItemID.SKILLS_NECKLACE1, 2));
                 }
             }
 
