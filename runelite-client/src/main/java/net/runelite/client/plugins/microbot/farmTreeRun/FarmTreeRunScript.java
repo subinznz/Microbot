@@ -148,6 +148,17 @@ public class FarmTreeRunScript extends Script {
                             if (!handledPatch)
                                 return;
                         }
+                        botStatus = HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
+                        break;
+                    case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
+                        patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
+                        if (config.brimhavenFruitTreePatch()) {
+                            if (walkToLocation(patch.getLocation())) {
+                                handledPatch = handlePatch(config, patch);
+                            }
+                            if (!handledPatch)
+                                return;
+                        }
                         botStatus = HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
                         break;
                     case HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH:
@@ -223,19 +234,9 @@ public class FarmTreeRunScript extends Script {
                             if (!handledPatch)
                                 return;
                         }
-                        botStatus = HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
-                        patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
-                        if (config.brimhavenFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
                         botStatus = HANDLE_CATHERBY_FRUIT_TREE_PATCH;
                         break;
+
                     case HANDLE_CATHERBY_FRUIT_TREE_PATCH:
                         patch = Patch.CATHERBY_FRUIT_TREE_PATCH;
                         if (config.catherbyFruitTreePatch()) {
@@ -459,7 +460,7 @@ public class FarmTreeRunScript extends Script {
     }
 
     private boolean handlePatch(FarmTreeRunConfig config, Patch patch) {
-        String[] possibleActions = {"Check", "Chop", "Pick", "Rake", "Clear", "Inspect"};
+        String[] possibleActions = {"Check", "Chop", "Pick", "Rake", "Clear", "Prune","Inspect"};
         GameObject treePatch = null;
         String foundAction = null;
         String exactAction = null;
@@ -513,6 +514,9 @@ public class FarmTreeRunScript extends Script {
                 break;
             case "Clear":
                 handleClearAction(treePatch);
+                break;
+            case "Prune":
+                handlePruneAction(treePatch);
                 break;
             case "Inspect":
                 if (handlePlantingTree(treePatch, patch, config))
@@ -679,6 +683,24 @@ public class FarmTreeRunScript extends Script {
         }
 
         // Wait for the clearing animation to finish
+        Rs2Player.waitForAnimation();
+        sleepUntil(() -> !Rs2Player.isAnimating() && Rs2Player.isInteracting() && Rs2Player.isMoving());
+    }
+
+    private void handlePruneAction(GameObject treePatch) {
+        System.out.println("Pruning sick tree...");
+
+        // Try to interact with the patch using the "clear" action
+        boolean interactionSuccess = Rs2GameObject.interact(treePatch, "prune");
+        Rs2Player.waitForAnimation();
+        sleepUntil(() -> !Rs2Player.isAnimating());
+
+        if (!interactionSuccess) {
+            System.out.println("Failed to interact with the tree patch to prune it.");
+            return;
+        }
+
+        // Wait for the pruning animation to finish
         Rs2Player.waitForAnimation();
         sleepUntil(() -> !Rs2Player.isAnimating() && Rs2Player.isInteracting() && Rs2Player.isMoving());
     }

@@ -118,13 +118,12 @@ public class Rs2InventorySetup {
             boolean exact = !inventorySetupsItem.isFuzzy();
 
             if (!Rs2Bank.hasBankItem(lowerCaseName, withdrawQuantity, exact)) {
+                Microbot.log("Bank is missing the following item " + inventorySetupsItem.getName() + " - " +withdrawQuantity, 10);
                 Microbot.pauseAllScripts = true;
-                Microbot.showMessage("Bank is missing the following item " + inventorySetupsItem.getName(), 10);
                 break;
             }
 
             withdrawItem(inventorySetupsItem, withdrawQuantity);
-            Microbot.log("Withdrawing: "+inventorySetupsItem.getName()+" - "+withdrawQuantity);
 
         }
 
@@ -182,13 +181,18 @@ public class Rs2InventorySetup {
      */
     private void withdrawItem(InventorySetupsItem item, int quantity) {
         if (item.isFuzzy()) {
+            Microbot.log("Withdraw fuzzy: "+item.getName()+" x "+quantity);
             Rs2Bank.withdrawX(item.getName(), quantity);
+            sleepUntil(() -> Rs2Inventory.hasItem(item.getName()), 1800);
+
         } else {
             if (quantity > 1) {
                 Rs2Bank.withdrawX(item.getId(), quantity);
             } else {
                 Rs2Bank.withdrawItem(item.getId());
             }
+            Microbot.log("Withdraw item: "+item.getName()+" x "+quantity);
+            sleepUntil(() -> Rs2Inventory.hasItem(item.getId()), 1800);
             sleep(100, 250);
         }
     }
