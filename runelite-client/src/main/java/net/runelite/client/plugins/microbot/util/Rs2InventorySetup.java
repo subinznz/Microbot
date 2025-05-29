@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.microbot.util;
 
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.Varbits;
 import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.inventorysetups.InventorySetup;
@@ -12,6 +13,7 @@ import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
 import org.slf4j.event.Level;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -91,8 +93,6 @@ public class Rs2InventorySetup {
         if (!Rs2Bank.isOpen()) {
             return false;
         }
-
-        Microbot.log("InvSetup: Loading inventory");
         Rs2Bank.depositAllExcept(itemsToNotDeposit());
         Map<Integer, List<InventorySetupsItem>> groupedByItems = inventorySetup.getInventory().stream().collect(Collectors.groupingBy(InventorySetupsItem::getId));
 
@@ -118,13 +118,12 @@ public class Rs2InventorySetup {
             boolean exact = !inventorySetupsItem.isFuzzy();
 
             if (!Rs2Bank.hasBankItem(lowerCaseName, withdrawQuantity, exact)) {
-                Microbot.log("Bank is missing the following item " + inventorySetupsItem.getName() + " - " +withdrawQuantity, 10);
-                Microbot.pauseAllScripts = true;
+                Microbot.log("Bank is missing the following item " + lowerCaseName + " x " +withdrawQuantity, 10);
+//                Microbot.pauseAllScripts = true;
                 break;
             }
 
             withdrawItem(inventorySetupsItem, withdrawQuantity);
-
         }
 
         sleep(1000);
@@ -181,10 +180,10 @@ public class Rs2InventorySetup {
      */
     private void withdrawItem(InventorySetupsItem item, int quantity) {
         if (item.isFuzzy()) {
-            Microbot.log("Withdraw fuzzy: "+item.getName()+" x "+quantity);
+            Microbot.log("Withdraw item: "+item.getName()+" x "+quantity);
             Rs2Bank.withdrawX(item.getName(), quantity);
             sleepUntil(() -> Rs2Inventory.hasItem(item.getName()), 1800);
-
+            sleep(100, 250);
         } else {
             if (quantity > 1) {
                 Rs2Bank.withdrawX(item.getId(), quantity);
@@ -203,14 +202,19 @@ public class Rs2InventorySetup {
      * @return true if the equipment matches the setup after loading, false otherwise.
      */
     public boolean loadEquipment() {
+        if (hasSpaceToUnequip()) {
+            unequipUnconfiguredSlots();
+        }
         Rs2Bank.openBank();
         if (!Rs2Bank.isOpen()) {
             return false;
         }
 
-        Microbot.log("InvSetup: Loading Equipment");
         //Clear inventory if full
         if (Rs2Inventory.isFull()) {
+            Rs2Bank.depositAll();
+            unequipUnconfiguredSlots();
+            Rs2Bank.openBank();
             Rs2Bank.depositAll();
         } else {
             //only deposit the items we don't need
@@ -227,9 +231,9 @@ public class Rs2InventorySetup {
         );
 
         if (hasExtraGearEquipped) {
-            Microbot.log("Found Extra Gear that is not contained within the setup", Level.DEBUG);
-            Rs2Bank.depositEquipment();
-            sleepUntil(() -> Rs2Equipment.items().stream().noneMatch(Objects::nonNull));
+            Microbot.log("Found Extra Gear that is not contained within the setup", Level.INFO);
+//            Rs2Bank.depositEquipment();
+//            sleepUntil(() -> Rs2Equipment.items().stream().noneMatch(Objects::nonNull));
         }
 
         for (InventorySetupsItem inventorySetupsItem : inventorySetup.getEquipment()) {
@@ -245,25 +249,27 @@ public class Rs2InventorySetup {
             }
 
             if (inventorySetupsItem.isFuzzy()) {
-
-                if (Rs2Inventory.hasItemAmount(inventorySetupsItem.getName(), (int) inventorySetup.getInventory().stream().filter(x -> x.getId() == inventorySetupsItem.getId()).count()))
-                    continue;
-                if (Rs2Equipment.isWearing(inventorySetupsItem.getName()))
-                    continue;
-
-                if (Rs2Inventory.hasItem(inventorySetupsItem.getName())) {
+                Microbot.log("Reached here isFuzzy");
+                if (Rs2Inventory.hasItemAmount(inventorySetupsItem.getName(), (int) inventorySetup.getInventory().stream().filter(x -> x.getId() == inventorySetupsItem.getId()).count())){
                     Rs2Bank.wearItem(inventorySetupsItem.getName());
-                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     continue;
                 }
+                Microbot.log("Reached here 2");
+                if (Rs2Equipment.isWearing(inventorySetupsItem.getName()))
+                    continue;
+                Microbot.log("Reached here 3");
+                if (Rs2Inventory.hasItem(inventorySetupsItem.getName())) {
+                    Rs2Bank.wearItem(inventorySetupsItem.getName());
+                    Microbot.log("Reached here 4");
+                    continue;
+                }
+                Microbot.log("Reached here 5");
 
                 if (inventorySetupsItem.getQuantity() > 1) {
                     Rs2Bank.withdrawAllAndEquip(inventorySetupsItem.getName());
-                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 } else {
                     Rs2Bank.withdrawAndEquip(inventorySetupsItem.getName());
-                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 }
             } else {
@@ -271,17 +277,13 @@ public class Rs2InventorySetup {
                     continue;
                 if (Rs2Inventory.hasItem(inventorySetupsItem.getName())) {
                     Rs2Bank.wearItem(inventorySetupsItem.getName());
-                    Microbot.log("Equipping :"+inventorySetupsItem.getName());
                     continue;
                 }
                 if (inventorySetupsItem.getQuantity() > 1) {
                     Rs2Bank.withdrawAllAndEquip(inventorySetupsItem.getName());
-                    Microbot.log("Equipping : "+inventorySetupsItem.getName());
                     sleep(100, 250);
                 } else {
                     Rs2Bank.withdrawAndEquip(inventorySetupsItem.getName());
-                    Microbot.log("Equipping: "+inventorySetupsItem.getName());
-
                 }
             }
         }
@@ -290,6 +292,8 @@ public class Rs2InventorySetup {
 
         return doesEquipmentMatch();
     }
+
+
 
     /**
      * Wears the equipment items defined in the inventory setup.
@@ -313,8 +317,8 @@ public class Rs2InventorySetup {
      */
     public boolean doesInventoryMatch() {
         Microbot.log("InvSetup: doesInventoryMatch");
+
         if(inventorySetup ==null || inventorySetup.getInventory() == null) {
-            Microbot.log("Inventory setup missing");
             return false;
         }
         Map<Integer, List<InventorySetupsItem>> groupedByItems = inventorySetup.getInventory().stream().collect(Collectors.groupingBy(InventorySetupsItem::getId));
@@ -365,8 +369,50 @@ public class Rs2InventorySetup {
                 }
             }
         }
+
+        for (EquipmentInventorySlot slot : EquipmentInventorySlot.values()) {
+            int slotIdx = slot.getSlotIdx();
+            boolean shouldBeEmpty = inventorySetup.getEquipment().get(slotIdx).getId() == -1;
+            boolean isActuallyEmpty = !Rs2Equipment.hasEquippedSlot(slot);
+
+            if (shouldBeEmpty && !isActuallyEmpty) {
+                Microbot.log("Extra item in slot " + slot.name());
+                return false;
+            }
+        }
+
         return true;
     }
+
+    public boolean unequipUnconfiguredSlots() {
+        Microbot.log("Handling unconfigured equipment ");
+        for (EquipmentInventorySlot slot : EquipmentInventorySlot.values()) {
+            if (shouldUnequipSlot(slot)) {
+                Rs2Equipment.unEquip(slot);
+                sleep(300, 500);
+            }
+        }
+        return doesEquipmentMatch();
+    }
+
+    public boolean hasSpaceToUnequip() {
+        long slotsToClear = Arrays.stream(EquipmentInventorySlot.values())
+                .filter(this::shouldUnequipSlot)
+                .count();
+
+        return slotsToClear <= Rs2Inventory.getEmptySlots();
+    }
+
+    private boolean shouldUnequipSlot(EquipmentInventorySlot slot) {
+        int slotIdx = slot.getSlotIdx();
+        boolean shouldBeEmpty = inventorySetup.getEquipment().get(slotIdx).getId() == -1;
+        boolean isEquipped = Rs2Equipment.hasEquippedSlot(slot);
+        return shouldBeEmpty && isEquipped;
+    }
+
+
+
+
     /**
      * Retrieves the list of inventory items from the setup, excluding any dummy items (ID == -1).
      *
