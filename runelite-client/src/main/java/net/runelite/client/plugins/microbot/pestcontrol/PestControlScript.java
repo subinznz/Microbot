@@ -88,15 +88,7 @@ public class PestControlScript extends Script {
 
                 if (initialise && !isInPestControl && !isInBoat) {
                     Microbot.log("Initialising");
-                    if (Microbot.getClient().getWorld() != config.world()) {
-                        Microbot.log("Hopping world to: "+config.world());
-                        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
-                        boolean isHopped = Microbot.hopToWorld(config.world());
-                        if (!isHopped) return;
-                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
-                        sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
-                    }
-                    if (Rs2Player.getWorldLocation().getRegionID() == 10537 && Microbot.getClient().getWorld() == config.world()) {
+                    if (Rs2Player.getWorldLocation().getRegionID() == 10537) {
                         var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                         Microbot.log("Starting Inv Setup");
                         try {
@@ -110,12 +102,14 @@ public class PestControlScript extends Script {
                                         return;
                                     }
                                 }
-                                if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
-                            } else {
+                            }
                                 Microbot.log("Inv Setup Finished");
                                 Rs2Bank.closeBank();
                                 initialise = false;
-                            }
+                                if (Microbot.getClient().getWorld() != config.world()) {
+                                    hopWorld(config.world());
+                                }
+
 
                         } catch (NullPointerException e) {
                             throw new RuntimeException("Void thinks you should relect the Inventory setup again");
@@ -126,7 +120,10 @@ public class PestControlScript extends Script {
                         Microbot.log("Traveling to Pest Island");
                         Rs2Walker.walkTo(new WorldPoint(2667, 2653, 0));
                     }
+
+
                 }
+
                 if (isInPestControl) {
                     plugin.lockCondition.lock();
                     initialise = false;
@@ -352,6 +349,20 @@ public class PestControlScript extends Script {
             }
         }
         return false;
+    }
+
+    public void hopWorld(int worldNum) {
+        Microbot.log("Hopping to world :" + worldNum);
+        if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
+        sleep(1000,2000);
+        for (int i = 0; i < 4 ; i++) {
+            if (Microbot.getClient().getWorld() == worldNum) break;
+            Microbot.hopToWorld(worldNum);
+            sleep(5000,7000);
+            sleepUntil(() -> Microbot.getClient().getGameState() == GameState.HOPPING);
+            sleepUntil(() -> Microbot.getClient().getGameState() == GameState.LOGGED_IN);
+        }
+
     }
 
     @Override

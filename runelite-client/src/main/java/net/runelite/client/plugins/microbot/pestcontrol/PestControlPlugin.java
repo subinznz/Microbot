@@ -92,7 +92,18 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
                     pestControlScript.exitBoat();
                     Global.sleepUntil(pestControlScript::isOutside, 5000);
                 }
+
                 Microbot.log("Reached outside");
+                pestControlScript.hopWorld(534);
+
+                if (pestControlScript.isInBoat()) {
+                    Microbot.log("Getting off boat");
+                    pestControlScript.exitBoat();
+                    Global.sleepUntil(pestControlScript::isOutside, 5000);
+                }
+
+
+
             }
             Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
