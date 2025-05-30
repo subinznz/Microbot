@@ -2,6 +2,7 @@ package net.runelite.client.plugins.microbot.farmTreeRun;
 
 import net.runelite.client.config.*;
 import net.runelite.client.plugins.microbot.farmTreeRun.enums.FruitTreeEnum;
+import net.runelite.client.plugins.microbot.farmTreeRun.enums.HardTreeEnums;
 import net.runelite.client.plugins.microbot.farmTreeRun.enums.TreeEnums;
 
 /**
@@ -108,7 +109,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "fruitTreeSapling",
             name = "Fruit tree sapling",
             description = "Select fruit tree sapling to use",
-            position = 3,
+            position = 4,
             section = generalSection
     )
     default FruitTreeEnum selectedFruitTree() {
@@ -119,7 +120,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "protectFruitTree",
             name = "Protect fruit trees",
             description = "Do you want to protect your fruit trees?",
-            position = 4,
+            position = 5,
             section = generalSection
     )
     default boolean protectFruitTrees() {
@@ -127,10 +128,32 @@ public interface FarmTreeRunConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "Fossil Island Tree",
+            name = "Hard sapling",
+            description = "Select Hard tree sapling to use",
+            position = 6,
+            section = generalSection
+    )
+    default HardTreeEnums selectedHardTree() {
+        return HardTreeEnums.MAHOGANY;
+    }
+
+    @ConfigItem(
+            keyName = "protectHardTree",
+            name = "Protect Hard trees",
+            description = "Do you want to protect your hard wood ;) ?",
+            position = 7,
+            section = generalSection
+    )
+    default boolean protectHardTrees() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "useCompost",
             name = "Use compost",
             description = "Only bottomless compost bucket is supported",
-            position = 5,
+            position = 8,
             section = generalSection
     )
     default boolean useCompost() {
@@ -141,7 +164,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "useGraceful",
             name = "Use graceful",
             description = "Enable if you want to wear graceful outfit",
-            position = 5,
+            position = 9,
             section = generalSection
     )
     default boolean useGraceful() {
@@ -200,6 +223,17 @@ public interface FarmTreeRunConfig extends Config {
             section = treePatchesSection
     )
     default boolean varrockTreePatch() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "fossil",
+            name = "Fossil Island",
+            description = "Fossil Island tree patch x3",
+            position = 4,
+            section = treePatchesSection
+    )
+    default boolean fossilTreePatch() {
         return true;
     }
 
