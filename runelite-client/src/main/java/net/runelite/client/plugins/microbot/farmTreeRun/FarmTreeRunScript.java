@@ -46,6 +46,8 @@ public class FarmTreeRunScript extends Script {
     private List<FarmingItem> items = new ArrayList<>();
     private final FarmTreeRunPlugin plugin;
     private final FarmTreeRunConfig config;
+    public static final boolean DEBUG_MODE = System.getProperty("java.vm.info", "").contains("sharing");
+
     private enum TreeKind {
         FRUIT_TREE,
         TREE,
@@ -120,193 +122,193 @@ public class FarmTreeRunScript extends Script {
                 Patch patch = null;
                 boolean handledPatch = false;
 
-                switch (botStatus) {
-                    case BANKING:
-                        if (config.banking()) {
-                            bank(config);
-                        } else {
-                            if (isCompostEnabled(config)) {
-                                compostItemId = ItemID.BOTTOMLESS_COMPOST_BUCKET_22997;
-                            }
-                            botStatus = HANDLE_GNOME_STRONGHOLD_FRUIT_PATCH;
-                        }
-                        break;
-                    case HANDLE_GNOME_STRONGHOLD_FRUIT_PATCH:
-                        patch = Patch.GNOME_STRONGHOLD_FRUIT_TREE_PATCH;
-                        if (config.gnomeStrongholdFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_GNOME_STRONGHOLD_TREE_PATCH;
-                        break;
-                    case HANDLE_GNOME_STRONGHOLD_TREE_PATCH:
-                        patch = Patch.GNOME_STRONGHOLD_TREE_PATCH;
-                        if (config.gnomeStrongholdTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
-                        patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
-                        if (config.brimhavenFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH:
-                        patch = Patch.TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
-                        if (config.treeGnomeVillageFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_FARMING_GUILD_TREE_PATCH;
-                        break;
-                    case HANDLE_FARMING_GUILD_TREE_PATCH:
-                        patch = Patch.FARMING_GUILD_TREE_PATCH;
-                        if (config.farmingGuildTreePatch() && patch.hasRequiredLevel()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_FARMING_GUILD_FRUIT_PATCH;
-                        break;
-                    case HANDLE_FARMING_GUILD_FRUIT_PATCH:
-                        patch = Patch.FARMING_GUILD_FRUIT_TREE_PATCH;
-                        if (config.farmingGuildFruitTreePatch() && patch.hasRequiredLevel()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_TAVERLEY_TREE_PATCH;
-                        break;
-                    case HANDLE_TAVERLEY_TREE_PATCH:
-                        patch = Patch.TAVERLEY_TREE_PATCH;
-                        if (config.taverleyTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch) return;
-                        }
-                        botStatus = HANDLE_FALADOR_TREE_PATCH;
-                        break;
-                    case HANDLE_FALADOR_TREE_PATCH:
-                        patch = Patch.FALADOR_TREE_PATCH;
-                        if (config.faladorTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch) return;
-                        }
-                        botStatus = HANDLE_LUMBRIDGE_TREE_PATCH;
-                        break;
-                    case HANDLE_LUMBRIDGE_TREE_PATCH:
-                        patch = Patch.LUMBRIDGE_TREE_PATCH;
-                        if (config.lumbridgeTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_VARROCK_TREE_PATCH;
-                        break;
-                    case HANDLE_VARROCK_TREE_PATCH:
-                        patch = Patch.VARROCK_TREE_PATCH;
-                        if (config.varrockTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_CATHERBY_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_CATHERBY_FRUIT_TREE_PATCH:
-                        patch = Patch.CATHERBY_FRUIT_TREE_PATCH;
-                        if (config.catherbyFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_FOSSIL_TREE_PATCH_A;
-                        break;
-                    case HANDLE_FOSSIL_TREE_PATCH_A:
-                        patch = Patch.FOSSIL_TREE_PATCH_A;
-                        if (config.fossilTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_FOSSIL_TREE_PATCH_B;
-                        break;
-                    case HANDLE_FOSSIL_TREE_PATCH_B:
-                        patch = Patch.FOSSIL_TREE_PATCH_B;
-                        if (config.fossilTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_FOSSIL_TREE_PATCH_C;
-                        break;
-                    case HANDLE_FOSSIL_TREE_PATCH_C:
-                        patch = Patch.FOSSIL_TREE_PATCH_C;
-                        if (config.fossilTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = HANDLE_LLETYA_FRUIT_TREE_PATCH;
-                        break;
-                    case HANDLE_LLETYA_FRUIT_TREE_PATCH:
-                        patch = Patch.LLETYA_FRUIT_TREE_PATCH;
-                        if (config.lletyaFruitTreePatch()) {
-                            if (walkToLocation(patch.getLocation())) {
-                                handledPatch = handlePatch(config, patch);
-                            }
-                            if (!handledPatch)
-                                return;
-                        }
-                        botStatus = FINISHED;
-                        break;
-                    case FINISHED:
-                        Microbot.getClientThread().runOnClientThreadOptional(() -> {
-                                    Microbot.getClient().addChatMessage(ChatMessageType.ENGINE, "", "Tree run completed.", "Acun", false);
-                                    Microbot.getClient().addChatMessage(ChatMessageType.ENGINE, "", "Made with love by Acun.", "Acun", false);
-                                    return null;
+                if(config.useSpiritMode()) {
+                    switch (botStatus) {
+                        case BANKING:
+                            if (config.banking()) {
+                                bank(config);
+                            } else {
+                                if (isCompostEnabled(config)) {
+                                    compostItemId = ItemID.BOTTOMLESS_COMPOST_BUCKET_22997;
                                 }
-                        );
-                        shutdown();
-                        plugin.reportFinished("Scheduled with Wassuppzzz", true);
-
-                        break;
+                                botStatus = HANDLE_GNOME_STRONGHOLD_FRUIT_PATCH;
+                            }
+                            break;
+                        case HANDLE_GNOME_STRONGHOLD_FRUIT_PATCH:
+                            patch = Patch.GNOME_STRONGHOLD_FRUIT_TREE_PATCH;
+                            if (config.gnomeStrongholdFruitTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_GNOME_STRONGHOLD_TREE_PATCH;
+                            break;
+                        case HANDLE_GNOME_STRONGHOLD_TREE_PATCH:
+                            patch = Patch.GNOME_STRONGHOLD_TREE_PATCH;
+                            if (config.gnomeStrongholdTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = config.useSpiritMode() ? HANDLE_FARMING_GUILD_TREE_PATCH : HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
+                            break;
+                        case HANDLE_FARMING_GUILD_TREE_PATCH:
+                            patch = Patch.FARMING_GUILD_TREE_PATCH;
+                            if (config.farmingGuildTreePatch() && patch.hasRequiredLevel()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_FARMING_GUILD_FRUIT_PATCH;
+                            break;
+                        case HANDLE_FARMING_GUILD_FRUIT_PATCH:
+                            patch = Patch.FARMING_GUILD_FRUIT_TREE_PATCH;
+                            if (config.farmingGuildFruitTreePatch() && patch.hasRequiredLevel()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = config.useSpiritMode() ? HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH : HANDLE_TAVERLEY_TREE_PATCH;
+                            break;
+                        case HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH:
+                            patch = Patch.BRIMHAVEN_FRUIT_TREE_PATCH;
+                            if (config.brimhavenFruitTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = config.useSpiritMode() ? HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH : HANDLE_CATHERBY_FRUIT_TREE_PATCH;
+                            break;
+                        case HANDLE_TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH:
+                            patch = Patch.TREE_GNOME_VILLAGE_FRUIT_TREE_PATCH;
+                            if (config.treeGnomeVillageFruitTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = config.useSpiritMode() ? HANDLE_TAVERLEY_TREE_PATCH :HANDLE_FARMING_GUILD_TREE_PATCH ;
+                            break;
+                        case HANDLE_TAVERLEY_TREE_PATCH:
+                            patch = Patch.TAVERLEY_TREE_PATCH;
+                            if (config.taverleyTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch) return;
+                            }
+                            botStatus = HANDLE_FALADOR_TREE_PATCH;
+                            break;
+                        case HANDLE_FALADOR_TREE_PATCH:
+                            patch = Patch.FALADOR_TREE_PATCH;
+                            if (config.faladorTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch) return;
+                            }
+                            botStatus = HANDLE_LUMBRIDGE_TREE_PATCH;
+                            break;
+                        case HANDLE_LUMBRIDGE_TREE_PATCH:
+                            patch = Patch.LUMBRIDGE_TREE_PATCH;
+                            if (config.lumbridgeTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_VARROCK_TREE_PATCH;
+                            break;
+                        case HANDLE_VARROCK_TREE_PATCH:
+                            patch = Patch.VARROCK_TREE_PATCH;
+                            if (config.varrockTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = config.useSpiritMode() ? HANDLE_CATHERBY_FRUIT_TREE_PATCH : HANDLE_BRIMHAVEN_FRUIT_TREE_PATCH;
+                            break;
+                        case HANDLE_CATHERBY_FRUIT_TREE_PATCH:
+                            patch = Patch.CATHERBY_FRUIT_TREE_PATCH;
+                            if (config.catherbyFruitTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_FOSSIL_TREE_PATCH_A;
+                            break;
+                        case HANDLE_FOSSIL_TREE_PATCH_A:
+                            patch = Patch.FOSSIL_TREE_PATCH_A;
+                            if (config.fossilTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_FOSSIL_TREE_PATCH_B;
+                            break;
+                        case HANDLE_FOSSIL_TREE_PATCH_B:
+                            patch = Patch.FOSSIL_TREE_PATCH_B;
+                            if (config.fossilTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_FOSSIL_TREE_PATCH_C;
+                            break;
+                        case HANDLE_FOSSIL_TREE_PATCH_C:
+                            patch = Patch.FOSSIL_TREE_PATCH_C;
+                            if (config.fossilTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = HANDLE_LLETYA_FRUIT_TREE_PATCH;
+                            break;
+                        case HANDLE_LLETYA_FRUIT_TREE_PATCH:
+                            patch = Patch.LLETYA_FRUIT_TREE_PATCH;
+                            if (config.lletyaFruitTreePatch()) {
+                                if (walkToLocation(patch.getLocation())) {
+                                    handledPatch = handlePatch(config, patch);
+                                }
+                                if (!handledPatch)
+                                    return;
+                            }
+                            botStatus = FINISHED;
+                            break;
+                        case FINISHED:
+                            Microbot.getClientThread().runOnClientThreadOptional(() -> {
+                                        Microbot.getClient().addChatMessage(ChatMessageType.ENGINE, "", "Tree run completed.", "Acun", false);
+                                        Microbot.getClient().addChatMessage(ChatMessageType.ENGINE, "", "Made with love by Acun.", "Acun", false);
+                                        return null;
+                                    }
+                            );
+                            shutdown();
+                            plugin.reportFinished("Scheduled with Wassuppzzz", true);
+                            break;
+                    }
                 }
-
                 long endTime = System.currentTimeMillis();
                 long totalTime = endTime - startTime;
                 System.out.println("Total time for loop " + totalTime);
@@ -380,7 +382,6 @@ public class FarmTreeRunScript extends Script {
             items.add(new FarmingItem(ItemID.COINS_995, 5000));
             items.add(new FarmingItem(ItemID.SPADE, 1));
             items.add(new FarmingItem(ItemID.RAKE, 1));
-            items.add(new FarmingItem(ItemID.SEED_DIBBER, 1));
 
             if (Rs2Bank.hasItem(ItemID.ENERGY_POTION4)) {
                 items.add(new FarmingItem(ItemID.ENERGY_POTION4, 1));
@@ -415,7 +416,7 @@ public class FarmTreeRunScript extends Script {
                 }
             }
 
-            if (config.farmingGuildTreePatch() || config.farmingGuildFruitTreePatch()) {
+            if (config.useSkillsNecklace() && (config.farmingGuildTreePatch() || config.farmingGuildFruitTreePatch())) {
                 if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE2)) {
                     items.add(new FarmingItem(ItemID.SKILLS_NECKLACE2, 1));
                 } else if (Rs2Bank.hasItem(ItemID.SKILLS_NECKLACE3)) {

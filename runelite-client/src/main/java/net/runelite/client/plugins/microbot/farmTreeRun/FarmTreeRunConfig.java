@@ -36,6 +36,9 @@ import net.runelite.client.plugins.microbot.farmTreeRun.enums.TreeEnums;
         "<br> If you want to stop the script during your farm run (maybe it gets stuck or whatever reason), make sure to disable 'Banking' and disable patches you previously ran. <br> Happy botting\n"
 )
 public interface FarmTreeRunConfig extends Config {
+
+    public static final boolean DEBUG_MODE = System.getProperty("java.vm.info", "").contains("sharing");
+
     @ConfigSection(
             name = "General",
             description = "General",
@@ -168,6 +171,28 @@ public interface FarmTreeRunConfig extends Config {
             section = generalSection
     )
     default boolean useGraceful() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "useSkillsNecklace",
+            name = "Use Skills Necklace",
+            description = "Useful if you don't have Spirit tree or Farming cape",
+            position = 10,
+            section = generalSection
+    )
+    default boolean useSkillsNecklace() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "useSpiritMode",
+            name = "Spirit Mode BETA (Advanced users)",
+            description = "Use Spirit tree preferred routing, requires you to modify spirit_trees.tsv",
+            position = 11,
+            section = generalSection
+    )
+    default boolean useSpiritMode() {
         return true;
     }
 
