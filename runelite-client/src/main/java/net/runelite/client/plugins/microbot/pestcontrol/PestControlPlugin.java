@@ -19,6 +19,7 @@ import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.Lo
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.OrCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.plugins.microbot.util.Global;
+import net.runelite.client.plugins.microbot.util.dialogues.Rs2Dialogue;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
 import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.pestcontrol.Portal;
@@ -30,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript.portals;
-
+import static net.runelite.client.plugins.microbot.util.Global.sleep;
 
 
 @PluginDescriptor(
@@ -92,8 +93,11 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
                     pestControlScript.exitBoat();
                     Global.sleepUntil(pestControlScript::isOutside, 5000);
                 }
-
-                Microbot.log("Reached outside");
+                Microbot.log("Reached outside , handling dialogue");
+                Rs2Dialogue.clickContinue();
+                sleep(500, 850);
+                Rs2Dialogue.clickContinue();
+                sleep(500, 850);
                 pestControlScript.hopWorld(534);
 
                 if (pestControlScript.isInBoat()) {
