@@ -81,9 +81,9 @@ public class FarmTreeRunScript extends Script {
         BRIMHAVEN_FRUIT_TREE_PATCH(7964, new WorldPoint(2765, 3213, 0), TreeKind.FRUIT_TREE, 1, 0),
         CATHERBY_FRUIT_TREE_PATCH(7965, new WorldPoint(2858, 3432, 0), TreeKind.FRUIT_TREE, 1, 0),
         LLETYA_FRUIT_TREE_PATCH(0000000, new WorldPoint(2345, 3163, 0), TreeKind.FRUIT_TREE, 1, 0),
-        FOSSIL_TREE_PATCH_A(30482, new WorldPoint(3713, 3836, 0), TreeKind.HARD_TREE, 1, 0),
-        FOSSIL_TREE_PATCH_B(30480, new WorldPoint(3708, 3835, 0), TreeKind.HARD_TREE, 1, 0),
-        FOSSIL_TREE_PATCH_C(30481, new WorldPoint(3704, 3837, 0), TreeKind.HARD_TREE, 1, 0);
+        FOSSIL_TREE_PATCH_A(30482, new WorldPoint(3718, 3835, 0), TreeKind.HARD_TREE, 1, 0),
+        FOSSIL_TREE_PATCH_B(30480, new WorldPoint(3709, 3836, 0), TreeKind.HARD_TREE, 1, 0),
+        FOSSIL_TREE_PATCH_C(30481, new WorldPoint(3701, 3840, 0), TreeKind.HARD_TREE, 1, 0);
 
         private final int id;
         private final WorldPoint location;
@@ -439,7 +439,7 @@ public class FarmTreeRunScript extends Script {
 
             int treeSaplingsCount = getSelectedTreePatches(config).size();
             int fruitTreeSaplingsCount = getSelectedFruitTreePatches(config).size();
-            int hardTreeSaplingsCount = getSelectedHardTreePatches(config).size()*2;
+            int hardTreeSaplingsCount = getSelectedHardTreePatches(config).size();
 
             Microbot.log("hard sapling count " + hardTreeSaplingsCount);
 
@@ -840,6 +840,8 @@ public class FarmTreeRunScript extends Script {
     private List<BooleanSupplier> getSelectedHardTreePatches(FarmTreeRunConfig config) {
         // Create a list of all possible tree patches
         List<BooleanSupplier> allHardTreePatches = List.of(
+                config::fossilTreePatch,
+                config::fossilTreePatch,
                 config::fossilTreePatch
         );
 
