@@ -65,10 +65,15 @@ public class HerbrunScript extends Script {
                 }
                 var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                    Microbot.log("Starting Inventory Setup");
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
-                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {                        
-                        plugin.reportFinished("Failed to load inventory setup",false);
-                        return;
+                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                        Microbot.log("Retrying Inventory Setup");
+                        if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                            plugin.reportFinished("Failed to load inventory setup", false);
+                            this.shutdown();
+                            return;
+                        }
                     }
                     Rs2Bank.closeBank();
                 }
@@ -96,7 +101,7 @@ public class HerbrunScript extends Script {
 
             if (!currentPatch.isInRange(10)) {
                 HerbrunPlugin.status = "Walking to " + currentPatch.getRegionName();
-                Rs2Walker.walkTo(currentPatch.getLocation(), 20);
+                Rs2Walker.walkTo(currentPatch.getLocation(), 5);
 
             }
 
@@ -255,7 +260,9 @@ public class HerbrunScript extends Script {
 
     @Override
     public void shutdown() {
-        super.shutdown();
-        initialized = false;
+        if (isRunning()) {
+            super.shutdown();
+            initialized = false;
+        }
     }
 }
