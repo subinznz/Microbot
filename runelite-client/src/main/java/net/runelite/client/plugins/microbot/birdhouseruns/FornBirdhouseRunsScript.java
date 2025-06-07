@@ -67,12 +67,9 @@ public class FornBirdhouseRunsScript extends Script {
                         if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                             Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                             if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                Microbot.log("Retrying Inventory Setup");
-                                if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                    plugin.reportFinished("Failed to load inventory setup", false);
-                                    this.shutdown();
-                                    return;
-                                }
+                                plugin.reportFinished("Failed to load inventory setup", false);
+                                this.shutdown();
+                                return;
                             }
                             if (Rs2Bank.isOpen()) Rs2Bank.closeBank();
                         }
