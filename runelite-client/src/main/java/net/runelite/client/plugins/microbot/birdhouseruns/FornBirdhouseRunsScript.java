@@ -185,9 +185,11 @@ public class FornBirdhouseRunsScript extends Script {
 
     @Override
     public void shutdown() {
-        super.shutdown();
-        initialized = false;
-        botStatus = states.TELEPORTING;
+        if (isRunning()) {
+            super.shutdown();
+            initialized = false;
+            botStatus = states.TELEPORTING;
+        }
     }
 
     private boolean interactWithObject(int objectId) {
