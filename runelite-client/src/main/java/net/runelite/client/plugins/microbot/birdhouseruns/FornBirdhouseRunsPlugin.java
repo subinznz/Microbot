@@ -57,6 +57,10 @@ public class FornBirdhouseRunsPlugin extends Plugin implements SchedulablePlugin
         try{
             if (event.getPlugin() == this) {
                 Microbot.stopPlugin(this);
+                if (fornBirdhouseRunsScript != null && fornBirdhouseRunsScript.isRunning()) {
+                    shutDown();
+                }
+                Microbot.getClientThread().invokeLater(()->  {Microbot.stopPlugin(this); return true;});
             }
         } catch (Exception e) {
             log.error("Error stopping plugin: ", e);

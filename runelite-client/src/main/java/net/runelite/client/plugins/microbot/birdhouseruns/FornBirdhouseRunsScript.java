@@ -67,8 +67,7 @@ public class FornBirdhouseRunsScript extends Script {
                         if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
                             Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
                             if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
-                                Microbot.log("Failed to load inventory setup");
-                                plugin.reportFinished("Birdhouse run failed to load inventory setup",false);                                                        
+                                plugin.reportFinished("Failed to load inventory setup", false);
                                 this.shutdown();
                                 return;
                             }
@@ -183,9 +182,11 @@ public class FornBirdhouseRunsScript extends Script {
 
     @Override
     public void shutdown() {
-        super.shutdown();
-        initialized = false;
-        botStatus = states.TELEPORTING;
+        if (isRunning()) {
+            super.shutdown();
+            initialized = false;
+            botStatus = states.TELEPORTING;
+        }
     }
 
     private boolean interactWithObject(int objectId) {

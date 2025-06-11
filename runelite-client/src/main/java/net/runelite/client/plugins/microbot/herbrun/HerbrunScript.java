@@ -10,6 +10,7 @@ import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herb
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herbrun.FarmingPatch;
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herbrun.FarmingWorld;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
+import net.runelite.client.plugins.microbot.util.antiban.Rs2AntibanSettings;
 import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.bank.enums.BankLocation;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
@@ -56,6 +57,7 @@ public class HerbrunScript extends Script {
             if (!Microbot.isLoggedIn()) return;
             if (!initialized) {
                 initialized = true;
+                Rs2AntibanSettings.universalAntiban = false;
                 HerbrunPlugin.status = "Gearing up";
                 populateHerbPatches();
                 if (herbPatches.isEmpty()) {                    

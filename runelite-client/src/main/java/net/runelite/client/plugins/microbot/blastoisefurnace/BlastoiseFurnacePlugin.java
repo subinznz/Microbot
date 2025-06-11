@@ -11,7 +11,13 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 
+import net.runelite.client.plugins.microbot.Microbot;
 import net.runelite.client.plugins.microbot.blastoisefurnace.enums.State;
+import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LogicalCondition;
+import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
+import net.runelite.client.plugins.microbot.util.Global;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
@@ -26,12 +32,39 @@ import java.awt.*;
         enabledByDefault = false
 )
 @Slf4j
-public class BlastoiseFurnacePlugin extends Plugin {
+public class BlastoiseFurnacePlugin extends Plugin implements SchedulablePlugin {
     @Inject
     private BlastoiseFurnaceConfig config;
     @Provides
     BlastoiseFurnaceConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(BlastoiseFurnaceConfig.class);
+    }
+
+    private LogicalCondition stopCondition = new AndCondition();
+
+    @Override
+    public LogicalCondition getStartCondition() {
+        // Create conditions that determine when your plugin can start
+        // Return null if the plugin can start anytime
+        return null;
+    }
+
+    @Override
+    public LogicalCondition getStopCondition() {
+        // Create a new stop condition
+
+        return this.stopCondition;
+    }
+
+    @Subscribe
+    public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
+        if (event.getPlugin() == this) {
+            if (BlastoiseFurnaceScript != null && BlastoiseFurnaceScript.isRunning()) {
+                Microbot.log("Shutting down BlastoiseFurnaceScript script due to soft stop event");
+                BlastoiseFurnaceScript.shutdown();
+            }
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
+        }
     }
 
     @Inject
@@ -78,24 +111,24 @@ public class BlastoiseFurnacePlugin extends Plugin {
             if (inventory.getItemContainer().contains(ItemID.COAL) && BlastoiseFurnaceScript.state != State.SMITHING) {
                 if (BlastoiseFurnaceScript.coalBagEmpty) BlastoiseFurnaceScript.coalBagEmpty = false;
             }
-            if (inventory.getItemContainer().contains(config.getBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 if(BlastoiseFurnaceScript.primaryOreEmpty){ BlastoiseFurnaceScript.primaryOreEmpty=false; }
             }
-            if (!inventory.getItemContainer().contains(config.getBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getPrimaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(!BlastoiseFurnaceScript.primaryOreEmpty){ BlastoiseFurnaceScript.primaryOreEmpty=true; }
             }
-            if (inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 //TODO ffs for some reason the print fixes it when run from IDE, but compiled still bugs out...
                 if(BlastoiseFurnaceScript.secondaryOreEmpty){ System.out.println("secondary set to not empty"); BlastoiseFurnaceScript.secondaryOreEmpty=false; }
             }
-            if (!inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(!BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=true; }
             }
             //TODO added
-            if (!inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
+            if (!inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.SMITHING){
                 if(!BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=true; }
             }
-            if (inventory.getItemContainer().contains(config.getBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
+            if (inventory.getItemContainer().contains(config.getPrimaryBars().getSecondaryOre()) && BlastoiseFurnaceScript.state != State.BANKING){
                 if(BlastoiseFurnaceScript.secondaryOreEmpty){ BlastoiseFurnaceScript.secondaryOreEmpty=false; }
             }
         }

@@ -100,8 +100,18 @@ public interface PestControlConfig extends Config {
             description = "Pest Control world",
             position = 10
     )
-
     default int world() {
         return 344;
     }
+    @ConfigItem(
+            keyName = "FinishedWorld",
+            name = "Finished World",
+            description = "World to change to after finishing",
+            position = 11
+    )
+    default int finishedWorld() {
+        return 534;
+    }
+
 }
+
