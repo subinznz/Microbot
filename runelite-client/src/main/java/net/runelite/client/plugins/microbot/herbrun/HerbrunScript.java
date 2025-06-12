@@ -10,6 +10,7 @@ import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herb
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herbrun.FarmingPatch;
 import net.runelite.client.plugins.microbot.questhelper.helpers.mischelpers.herbrun.FarmingWorld;
 import net.runelite.client.plugins.microbot.util.Rs2InventorySetup;
+import net.runelite.client.plugins.microbot.util.antiban.Rs2AntibanSettings;
 import net.runelite.client.plugins.microbot.util.bank.Rs2Bank;
 import net.runelite.client.plugins.microbot.util.bank.enums.BankLocation;
 import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
@@ -56,6 +57,7 @@ public class HerbrunScript extends Script {
             if (!Microbot.isLoggedIn()) return;
             if (!initialized) {
                 initialized = true;
+                Rs2AntibanSettings.universalAntiban = false;
                 HerbrunPlugin.status = "Gearing up";
                 populateHerbPatches();
                 if (herbPatches.isEmpty()) {                    
@@ -65,9 +67,11 @@ public class HerbrunScript extends Script {
                 }
                 var inventorySetup = new Rs2InventorySetup(config.inventorySetup(), mainScheduledFuture);
                 if (!inventorySetup.doesInventoryMatch() || !inventorySetup.doesEquipmentMatch()) {
+                    Microbot.log("Starting Inventory Setup");
                     Rs2Walker.walkTo(Rs2Bank.getNearestBank().getWorldPoint(), 20);
-                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {                        
-                        plugin.reportFinished("Failed to load inventory setup",false);
+                    if (!inventorySetup.loadEquipment() || !inventorySetup.loadInventory()) {
+                        plugin.reportFinished("Failed to load inventory setup", false);
+                        this.shutdown();
                         return;
                     }
                     Rs2Bank.closeBank();
@@ -96,7 +100,7 @@ public class HerbrunScript extends Script {
 
             if (!currentPatch.isInRange(10)) {
                 HerbrunPlugin.status = "Walking to " + currentPatch.getRegionName();
-                Rs2Walker.walkTo(currentPatch.getLocation(), 20);
+                Rs2Walker.walkTo(currentPatch.getLocation(), 5);
 
             }
 
@@ -255,7 +259,9 @@ public class HerbrunScript extends Script {
 
     @Override
     public void shutdown() {
-        super.shutdown();
-        initialized = false;
+        if (isRunning()) {
+            super.shutdown();
+            initialized = false;
+        }
     }
 }

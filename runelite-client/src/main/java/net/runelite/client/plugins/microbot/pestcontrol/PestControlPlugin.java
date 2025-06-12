@@ -4,11 +4,14 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.nmz.NmzScript;
 import net.runelite.client.plugins.microbot.pluginscheduler.api.SchedulablePlugin;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.AndCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.LockCondition;
@@ -16,6 +19,10 @@ import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.Lo
 import net.runelite.client.plugins.microbot.pluginscheduler.condition.logical.OrCondition;
 import net.runelite.client.plugins.microbot.pluginscheduler.event.PluginScheduleEntrySoftStopEvent;
 import net.runelite.client.plugins.microbot.util.Global;
+import net.runelite.client.plugins.microbot.util.dialogues.Rs2Dialogue;
+import net.runelite.client.plugins.microbot.util.gameobject.Rs2GameObject;
+import net.runelite.client.plugins.microbot.util.security.Login;
+import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.plugins.pestcontrol.Portal;
 import net.runelite.client.ui.overlay.OverlayManager;
 
@@ -25,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.runelite.client.plugins.microbot.pestcontrol.PestControlScript.portals;
-
+import static net.runelite.client.plugins.microbot.util.Global.sleep;
 
 
 @PluginDescriptor(
@@ -73,15 +80,33 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
     @Subscribe
     public void onPluginScheduleEntrySoftStopEvent(PluginScheduleEntrySoftStopEvent event) {
         if (event.getPlugin() == this) {
-            Microbot.log("Scheduler about to turn off Pest Control");
-            if(pestControlScript.isInBoat()) {
-                Microbot.log("Getting off boat");
-                pestControlScript.exitBoat();
-                Global.sleepUntil(pestControlScript::isOutside, 5000);
+            if (pestControlScript != null && pestControlScript.isRunning()) {
+
+                Microbot.log("Scheduler about to turn off Pest Control");
+
+                if (pestControlScript != null) {
+                    pestControlScript.shutdown();
+                    Global.sleep(10000);
+                }
+
+                if (pestControlScript.isInBoat()) {
+                    Microbot.log("Getting off boat");
+                    pestControlScript.exitBoat();
+                    Global.sleepUntil(pestControlScript::isOutside, 5000);
+                }
+                Microbot.log("Reached outside , handling dialogue");
+                Rs2Dialogue.clickContinue();
+                sleep(500, 850);
+                Rs2Dialogue.clickContinue();
+                sleep(500, 850);
+                pestControlScript.hopWorld(config.finishedWorld());
+                if (pestControlScript.isInBoat()) {
+                    Microbot.log("Getting off boat");
+                    pestControlScript.exitBoat();
+                    Global.sleepUntil(pestControlScript::isOutside, 5000);
+                }
             }
-            Microbot.log("Reached outside");
-            pestControlScript.shutdown();
-            Microbot.stopPlugin(this);
+            Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
     }
 
