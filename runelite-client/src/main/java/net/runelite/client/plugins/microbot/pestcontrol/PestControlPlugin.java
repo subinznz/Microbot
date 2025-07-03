@@ -3,6 +3,7 @@ package net.runelite.client.plugins.microbot.pestcontrol;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.ComponentID;
@@ -105,6 +106,7 @@ public class PestControlPlugin extends Plugin implements SchedulablePlugin {
                     pestControlScript.exitBoat();
                     Global.sleepUntil(pestControlScript::isOutside, 5000);
                 }
+                Rs2Walker.walkTo(new WorldPoint(2667, 2653, 0),2);
             }
             Microbot.getClientThread().invokeLater( ()->  {Microbot.stopPlugin(this); return true;});
         }
