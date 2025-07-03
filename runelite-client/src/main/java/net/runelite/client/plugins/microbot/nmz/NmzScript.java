@@ -54,7 +54,7 @@ public class NmzScript extends Script {
     private long lastCombatTime = 0;
 
     public boolean canStartNmz() {
-        return Rs2Inventory.count("overload (4)") == config.overloadPotionAmount() ||
+        return Rs2Inventory.count("overload (4)") == config.overloadPotionAmount() && Rs2Inventory.count("absorption (4)") == config.absorptionPotionAmount() ||
                 (Rs2Inventory.hasItem("prayer potion") && config.togglePrayerPotions());
     }
 
@@ -134,6 +134,7 @@ public class NmzScript extends Script {
                 fetchPotions(ObjectID.ABSORPTION_POTION, absorption, config.absorptionPotionAmount());
             }
         }
+        Microbot.log("can we start?");
         if (canStartNmz()) {
             consumeEmptyVial();
         } else {
@@ -338,7 +339,7 @@ public class NmzScript extends Script {
 
         if (absorptionAmt > config.absorptionPotionAmount() * 4 && overloadAmt > config.overloadPotionAmount() * 4)
             return;
-
+        Microbot.log("Reached here");
         if (!Rs2Inventory.isFull()) {
             if ((absorptionAmt < (config.absorptionPotionAmount() * 4) || overloadAmt < config.overloadPotionAmount() * 4) && nmzPoints < 100000) {
                 Microbot.showMessage("BOT SHUTDOWN: Not enough points to buy potions");
@@ -346,7 +347,7 @@ public class NmzScript extends Script {
                 return;
             }
         }
-
+        Microbot.log("Reached here2");
         Rs2GameObject.interact(26273);
         sleepUntil(() -> Rs2Widget.isWidgetVisible(13500418) || Rs2Bank.isBankPinWidgetVisible(), 10000);
         if (Rs2Bank.isBankPinWidgetVisible()) {
@@ -357,7 +358,7 @@ public class NmzScript extends Script {
             }
             sleepUntil(() -> Rs2Widget.isWidgetVisible(13500418), 10000);
         }
-
+        Microbot.log("Reached here 3");
         Widget benefitsBtn = Rs2Widget.getWidget(13500418);
         if (benefitsBtn == null) return;
         boolean notSelected = benefitsBtn.getSpriteId() != 813;
