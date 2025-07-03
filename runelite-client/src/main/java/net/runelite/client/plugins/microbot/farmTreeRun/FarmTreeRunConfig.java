@@ -293,10 +293,32 @@ public interface FarmTreeRunConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "varlamore",
+            name = "Varlamore",
+            description = "Varlamore tree patch",
+            position = 2,
+            section = hardtreePatchesSection
+    )
+    default boolean varlamoreTreePatch() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "pickFruitOnly",
+            name = "Pick fruit only",
+            description = "Do you want to forever harvest?",
+            position = 1,
+            section = fruitTreePatchesSection
+    )
+    default boolean pickFruitOnly() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "brimhaven",
             name = "Brimhaven",
             description = "Brimhaven fruit tree patch",
-            position = 1,
+            position = 2,
             section = fruitTreePatchesSection
     )
     default boolean brimhavenFruitTreePatch() {
@@ -307,7 +329,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "catherby",
             name = "Catherby",
             description = "Catherby fruit tree patch",
-            position = 2,
+            position = 3,
             section = fruitTreePatchesSection
     )
     default boolean catherbyFruitTreePatch() {
@@ -318,7 +340,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "gnomeStrongholdFruitTree",
             name = "Gnome Stronghold",
             description = "Gnome Stronghold fruit tree patch",
-            position = 3,
+            position = 4,
             section = fruitTreePatchesSection
     )
     default boolean gnomeStrongholdFruitTreePatch() {
@@ -329,7 +351,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "treeGnomeVillage",
             name = "Tree gnome village",
             description = "Tree gnome village tree patch",
-            position = 4,
+            position = 5,
             section = fruitTreePatchesSection
     )
     default boolean treeGnomeVillageFruitTreePatch() {
@@ -340,7 +362,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "lletya",
             name = "Lletya",
             description = "Lletya tree patch",
-            position = 5,
+            position = 6,
             section = fruitTreePatchesSection
     )
     default boolean lletyaFruitTreePatch() {
@@ -351,7 +373,7 @@ public interface FarmTreeRunConfig extends Config {
             keyName = "farmingGuildFruitTree",
             name = "Farming Guild",
             description = "Farming guild fruit tree patch",
-            position = 6,
+            position = 7,
             section = fruitTreePatchesSection
     )
     default boolean farmingGuildFruitTreePatch() {

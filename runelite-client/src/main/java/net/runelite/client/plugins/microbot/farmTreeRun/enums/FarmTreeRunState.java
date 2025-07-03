@@ -45,5 +45,7 @@ public enum FarmTreeRunState {
 
     HANDLE_FOSSIL_TREE_PATCH_C,
 
+    HANDLE_VARLAMORE_TREE_PATCH,
+
     FINISHED
 }
