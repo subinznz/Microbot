@@ -790,7 +790,11 @@ public class FarmTreeRunScript extends Script {
     private void equipGraceful() {
         checkBeforeWithdrawAndEquip("GRACEFUL GLOVES");
         checkBeforeWithdrawAndEquip("GRACEFUL LEGS");
-        checkBeforeWithdrawAndEquip("GRACEFUL CAPE");
+        if (config.useSpiritMode()) {
+            checkBeforeWithdrawAndEquip("FARMING CAPE");
+            checkBeforeWithdrawAndEquip("RING OF ENDURANCE");
+        } else
+            checkBeforeWithdrawAndEquip("GRACEFUL CAPE");
         checkBeforeWithdrawAndEquip("GRACEFUL BOOTS");
         checkBeforeWithdrawAndEquip("GRACEFUL HOOD");
         checkBeforeWithdrawAndEquip("GRACEFUL TOP");
